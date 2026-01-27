@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud9 Assistant Coach | Junie AI</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        c9: {
+                            blue: '#00AEEF',
+                            dark: '#0A0A0C',
+                            glass: 'rgba(0, 174, 239, 0.05)'
+                        },
+                        val: { red: '#FF4655' },
+                        lol: { gold: '#C89B3C' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050507;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .liquid-glass:hover {
+            border-color: rgba(0, 174, 239, 0.4);
+            background: rgba(0, 174, 239, 0.03);
+        }
+
+        .c9-glow {
+            box-shadow: 0 0 40px -10px rgba(0, 174, 239, 0.2);
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #fff, #00AEEF);
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #00AEEF;
+            color: #00AEEF;
+        }
+    </style>
+</head>
+
+<body class="selection:bg-blue-500/30">
+
+    <!-- Background Orbs -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[150px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-400/10 blur-[150px]"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+            <div class="flex items-center gap-6">
+                <div class="w-16 h-16 bg-c9-blue/20 rounded-2xl flex items-center justify-center border border-c9-blue/30 c9-glow cursor-pointer" onclick="openSeriesBrowser()">
+                    <svg viewBox="0 0 24 24" class="w-10 h-10 fill-c9-blue" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        <circle cx="12" cy="12" r="5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-display font-bold tracking-tighter text-gradient cursor-pointer" onclick="openSeriesBrowser()">CLOUD9 ASSISTANT COACH</h1>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="px-2 py-0.5 bg-c9-blue/10 text-c9-blue text-[10px] font-bold rounded uppercase tracking-widest border border-c9-blue/20 cursor-pointer" onclick="openSeriesBrowser()">AI STRATEGIST: JUNIE</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="series-id-display" class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Live Demo</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                <button onclick="switchGame('VALORANT')" id="btn-val" class="px-6 py-2 rounded-lg text-sm font-bold transition-all tab-active">VALORANT</button>
+                <button onclick="switchGame('LOL')" id="btn-lol" class="px-6 py-2 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-white">LEAGUE OF LEGENDS</button>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: MACRO REVIEW & PREDICTIONS -->
+            <div class="lg:col-span-8 space-y-8">
+                
+                <!-- Section 2: Automated Macro Game Review -->
+                <section class="liquid-glass p-8 c9-glow relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <i data-lucide="layout-dashboard" class="text-c9-blue/20 w-12 h-12"></i>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 mb-6">
+                        <i data-lucide="clipboard-list" class="text-c9-blue w-6 h-6"></i>
+                        <h2 class="text-2xl font-display font-bold">Automated Macro Review</h2>
+                    </div>
+
+                    <div id="macro-loading" class="hidden py-12 flex flex-col items-center justify-center">
+                        <div class="w-8 h-8 border-4 border-c9-blue border-t-transparent rounded-full animate-spin"></div>
+                        <p class="mt-4 text-slate-400 text-sm font-mono uppercase tracking-widest">Analyzing Match Data...</p>
+                    </div>
+
+                    <div id="macro-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="macro-agenda-items">
+                            <!-- Populated via JS -->
+                        </div>
+                        
+                        <div class="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10">
+                            <h3 class="text-sm font-bold uppercase text-slate-400 mb-4 tracking-widest">Coaching Action Plan</h3>
+                            <ul class="space-y-3" id="action-plan">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Hypothetical Outcome Prediction -->
+                <section class="liquid-glass p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <i data-lucide="cpu" class="text-purple-500/20 w-12 h-12"></i>
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-6">
+                        <i data-lucide="zap" class="text-purple-500 w-6 h-6"></i>
+                        <h2 class="text-2xl font-display font-bold">Hypothetical Predictions</h2>
+                    </div>
+
+                    <div class="relative mb-8">
+                        <input type="text" id="what-if-query" 
+                            class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-lg font-mono focus:outline-none focus:border-purple-500/50 transition-colors"
+                            placeholder="What if we saved instead of retaking?">
+                        <button onclick="runSimulation()" class="absolute right-3 top-3 px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20">
+                            SIMULATE
+                        </button>
+                    </div>
+
+                    <div id="sim-result" class="hidden animate-fadeIn">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 rounded-2xl bg-red-500/5 border border-red-500/20 text-center">
+                                <span class="text-xs font-bold text-red-500 uppercase tracking-widest">Actual Decision</span>
+                                <div class="text-5xl font-display font-bold my-2" id="sim-prob-actual">15%</div>
+                                <span class="text-xs text-slate-400">Success Probability</span>
+                            </div>
+                            <div class="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-center">
+                                <span class="text-xs font-bold text-emerald-500 uppercase tracking-widest">Simulated Alternative</span>
+                                <div class="text-5xl font-display font-bold my-2 text-emerald-400" id="sim-prob-alt">60%</div>
+                                <span class="text-xs text-slate-400">Success Probability</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-6 bg-purple-500/5 border border-purple-500/20 rounded-2xl">
+                            <p class="text-slate-300 italic" id="sim-reasoning"></p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN: PERSONALIZED INSIGHTS -->
+            <div class="lg:col-span-4 space-y-8">
+                
+                <!-- Section 1: Personalized Insights -->
+                <section class="liquid-glass p-8 border-l-4 border-l-c9-blue h-full">
+                    <div class="flex items-center gap-3 mb-8">
+                        <i data-lucide="trending-up" class="text-c9-blue w-6 h-6"></i>
+                        <h2 class="text-xl font-display font-bold uppercase tracking-tight">Micro Analytics</h2>
+                    </div>
+
+                    <div class="space-y-6" id="insights-container">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <div class="mt-12">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest">Active Personnel</h3>
+                        <div class="grid grid-cols-3 gap-3" id="player-grid">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <footer class="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
+            <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
+                © 2025 Cloud9 x Junie AI | GRID Data Ecosystem
+            </div>
+            <div class="flex gap-4">
+                <a href="/dashboard" class="text-[10px] text-c9-blue hover:text-white transition-colors uppercase tracking-widest font-bold">Standard Dashboard</a>
+                <a href="/docs" class="text-[10px] text-slate-500 hover:text-white transition-colors uppercase tracking-widest font-bold">API Docs</a>
+            </div>
+        </footer>
+
+        <!-- Series Browser Modal -->
+        <div id="series-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300">
+            <div class="liquid-glass p-8 w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col border border-c9-blue/20 shadow-2xl shadow-c9-blue/10">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-c9-blue/20 rounded-xl flex items-center justify-center border border-c9-blue/30">
+                            <i data-lucide="search" class="text-c9-blue w-5 h-5"></i>
+                        </div>
+                        <h2 class="text-2xl font-display font-bold">Series Explorer</h2>
+                    </div>
+                    <button onclick="closeSeriesBrowser()" class="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 overflow-hidden">
+                    <!-- Titles -->
+                    <div class="flex flex-col h-full">
+                        <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-3 tracking-widest">Titles</h3>
+                        <div id="list-titles" class="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                            <!-- Titles injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Tournaments -->
+                    <div class="flex flex-col h-full">
+                        <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-3 tracking-widest">Tournaments</h3>
+                        <div id="list-tournaments" class="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                            <p class="text-xs text-slate-600 italic">Select a title...</p>
+                        </div>
+                    </div>
+
+                    <!-- Series -->
+                    <div class="flex flex-col h-full">
+                        <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-3 tracking-widest">Active Series</h3>
+                        <div id="list-series" class="flex-1 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
+                            <p class="text-xs text-slate-600 italic">Select a tournament...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/5 flex justify-between items-center">
+                    <div class="text-[10px] text-slate-500 font-mono">POWERED BY GRID CENTRAL DATA API</div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="manual-series-id" placeholder="Manual Series ID" class="bg-black/40 border border-white/10 rounded-lg px-4 py-2 text-xs font-mono focus:outline-none focus:border-c9-blue/50">
+                        <button onclick="loadManualSeries()" class="bg-c9-blue text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-400 transition-colors">LOAD</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let currentGame = 'VALORANT';
+        const apiBase = '/api/v1';
+
+        // GRID Series Discovery
+        async function openSeriesBrowser() {
+            const modal = document.getElementById('series-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            await fetchTitles();
+        }
+
+        function closeSeriesBrowser() {
+            const modal = document.getElementById('series-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        async function fetchTitles() {
+            const container = document.getElementById('list-titles');
+            container.innerHTML = '<div class="animate-pulse space-y-2"><div class="h-8 bg-white/5 rounded"></div><div class="h-8 bg-white/5 rounded"></div></div>';
+            
+            try {
+                const res = await fetch(`${apiBase}/grid/titles`);
+                const json = await res.json();
+                const titles = json.data.titles;
+                
+                container.innerHTML = titles.map(t => `
+                    <button onclick="fetchTournaments('${t.id}')" class="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-c9-blue/20 border border-transparent hover:border-c9-blue/30 transition-all group">
+                        <div class="text-sm font-bold group-hover:text-c9-blue">${t.name}</div>
+                        <div class="text-[10px] text-slate-500">ID: ${t.id}</div>
+                    </button>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = `<p class="text-xs text-red-400">Error loading titles</p>`;
+            }
+        }
+
+        async function fetchTournaments(titleId) {
+            const container = document.getElementById('list-tournaments');
+            container.innerHTML = '<div class="animate-pulse space-y-2"><div class="h-8 bg-white/5 rounded"></div><div class="h-8 bg-white/5 rounded"></div></div>';
+            document.getElementById('list-series').innerHTML = '<p class="text-xs text-slate-600 italic">Select a tournament...</p>';
+
+            try {
+                const res = await fetch(`${apiBase}/grid/tournaments?title_id=${titleId}`);
+                const json = await res.json();
+                const tournaments = json.data.tournaments.edges;
+                
+                container.innerHTML = tournaments.map(e => `
+                    <button onclick="fetchSeries('${e.node.id}')" class="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-c9-blue/20 border border-transparent hover:border-c9-blue/30 transition-all group">
+                        <div class="text-sm font-bold group-hover:text-c9-blue">${e.node.name}</div>
+                        <div class="text-[10px] text-slate-500">ID: ${e.node.id}</div>
+                    </button>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = `<p class="text-xs text-red-400">Error loading tournaments</p>`;
+            }
+        }
+
+        async function fetchSeries(tournamentId) {
+            const container = document.getElementById('list-series');
+            container.innerHTML = '<div class="animate-pulse space-y-2"><div class="h-8 bg-white/5 rounded"></div><div class="h-8 bg-white/5 rounded"></div></div>';
+            
+            try {
+                const res = await fetch(`${apiBase}/grid/all-series?tournament_id=${tournamentId}`);
+                const json = await res.json();
+                const series = json.data.allSeries.edges;
+                
+                if (series.length === 0) {
+                    container.innerHTML = '<p class="text-xs text-slate-500 italic">No active series found.</p>';
+                    return;
+                }
+
+                container.innerHTML = series.map(e => {
+                    const teams = e.node.teams.map(t => t.baseInfo.name).join(' vs ');
+                    return `
+                        <button onclick="selectSeries('${e.node.id}')" class="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-transparent hover:border-emerald-500/30 transition-all group">
+                            <div class="text-sm font-bold group-hover:text-emerald-400">${teams}</div>
+                            <div class="text-[10px] text-slate-500">Series ID: ${e.node.id}</div>
+                            <div class="text-[10px] text-slate-600">${new Date(e.node.startTimeScheduled).toLocaleString()}</div>
+                        </button>
+                    `;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = `<p class="text-xs text-red-400">Error loading series</p>`;
+            }
+        }
+
+        function selectSeries(seriesId) {
+            document.getElementById('series-id-display').innerText = `Series: ${seriesId}`;
+            closeSeriesBrowser();
+            // In a real app, this would trigger a full data reload for the specific series
+            console.log(`System updated to Series ${seriesId}. Analysis recalibrating...`);
+            updateDashboard();
+        }
+
+        function loadManualSeries() {
+            const id = document.getElementById('manual-series-id').value;
+            if (id) selectSeries(id);
+        }
+
+        const demoData = {
+            VALORANT: {
+                insights: [
+                    {
+                        data: "C9 loses nearly 4 out of 5 rounds (78%) when OXY dies 'for free' (without a KAST)",
+                        insight: "Player OXY's opening duel success rate heavily impacts the team, leading to a 78% round loss rate when dying first without a KAST.",
+                        recommendation: "Review opening pathing and strategy to ensure trade potential."
+                    },
+                    {
+                        data: "C9 loses both pistol rounds 7/10 times they play 1-3-1 on Split.",
+                        insight: "Strategy execution on Split pistol rounds is suboptimal in 1-3-1 formations.",
+                        recommendation: "Review starting composition or alternate pistol round strategies on Split."
+                    },
+                    {
+                        data: "C9 won the force buy in the 2nd round 7/10 times in the last 15 maps, but subsequently lost rounds 3 and 4.",
+                        insight: "Force-buy success creates a false sense of security, leading to downstream economic snowball effects.",
+                        recommendation: "Standardize bonus round protocols after force-buy wins."
+                    }
+                ],
+                macro: [
+                    { title: "Pistol Rounds", detail: "Lost both pistols (0-2)", priority: "HIGH" },
+                    { title: "Eco Management", detail: "Unsuccessful force-buy on Round 2 led to bonus round loss (Round 3).", priority: "CRITICAL" },
+                    { title: "Mid-Round Calls", detail: "4/10 attacking rounds saw late A-main pushes with <20s left, resulting in 3 losses.", priority: "MEDIUM" },
+                    { title: "Ultimate Economy", detail: "Only 7 orbs picked up vs 11 by enemy team.", priority: "LOW" }
+                ],
+                players: ['OXY', 'jakee', 'vanity', 'Xeppaa', 'runi'],
+                whatIf: {
+                    query: "On Round 22 (score 10-11) on Haven, we attempted a 3v5 retake on C-site and lost. Would it have been better to save our weapons?",
+                    actual: "15%",
+                    alt: "60%",
+                    reasoning: "The 3v5 retake had a 15% probability of success. Conceding the round and saving 3 rifles would have given the team a 60% chance to win the following gun round, versus the 35% chance they had on a broken buy."
+                }
+            },
+            LOL: {
+                insights: [
+                    {
+                        data: "Jungler gank success rate: 22% (Top pre-6m) vs 68% (Bot pre-6m).",
+                        insight: "Early topside pathing is frequently counter-jungled or results in low-impact ganks.",
+                        recommendation: "Prioritize botside pathing to secure early drake control and play to the higher-success-rate lane."
+                    },
+                    {
+                        data: "When mid laner roams to bot before level 11, team win rate increases by 24%.",
+                        insight: "Mid lane priority directly translates to bot lane snowballing in current meta.",
+                        recommendation: "Draft high-push mid champions to enable roam timings."
+                    }
+                ],
+                macro: [
+                    { title: "First Drake Setup", detail: "Inadequate deep vision, teleport wards not swept.", priority: "HIGH" },
+                    { title: "Atakhan Setup", detail: "Excessive unspent gold in inventories (avg 1800g). Suggest base timer 45s prior.", priority: "MEDIUM" },
+                    { title: "Isolated Deaths", detail: "23:20 (Top in Top), 27:15 (Mid in Bot, before drake spawn).", priority: "CRITICAL" },
+                    { title: "Teleport Use", detail: "Poor TP flank at 19:40 led to a lost teamfight.", priority: "MEDIUM" }
+                ],
+                players: ['Berserker', 'Blaber', 'Jojo', 'Fudge', 'Vulcan'],
+                whatIf: {
+                    query: "C9 contested a Drake at 24:15 and everybody died. Would it have been better to not contest the objective at all?",
+                    actual: "22%",
+                    alt: "85%",
+                    reasoning: "Analyzing game state (gold, items, levels). Conceding the objective had an 85% probability of resulting in 2 turret kills and +200 XP advantage per player, versus the 22% probability of winning the fight."
+                }
+            }
+        };
+
+        function switchGame(game) {
+            currentGame = game;
+            document.getElementById('btn-val').className = `px-6 py-2 rounded-lg text-sm font-bold transition-all ${game === 'VALORANT' ? 'tab-active' : 'text-slate-400 hover:text-white'}`;
+            document.getElementById('btn-lol').className = `px-6 py-2 rounded-lg text-sm font-bold transition-all ${game === 'LOL' ? 'tab-active' : 'text-slate-400 hover:text-white'}`;
+            
+            updateDashboard();
+        }
+
+        async function updateDashboard() {
+            const data = demoData[currentGame];
+            
+            // Update Insights
+            const insightsContainer = document.getElementById('insights-container');
+            insightsContainer.innerHTML = data.insights.map((item, idx) => `
+                <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-c9-blue/30 transition-all fade-in" style="animation-delay: ${idx * 0.1}s">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-[10px] font-bold text-c9-blue uppercase tracking-widest bg-c9-blue/10 px-2 py-0.5 rounded">Data Point</span>
+                    </div>
+                    <p class="text-sm font-medium mb-4">${item.data}</p>
+                    <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                        <div class="flex items-start gap-2">
+                            <i data-lucide="target" class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"></i>
+                            <p class="text-xs text-emerald-400 font-semibold leading-relaxed">${item.insight}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update Macro
+            const macroAgenda = document.getElementById('macro-agenda-items');
+            macroAgenda.innerHTML = data.macro.map((item, idx) => `
+                <div class="p-5 rounded-2xl bg-black/20 border border-white/5 hover:bg-white/5 transition-all">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="text-sm font-bold text-white">${item.title}</h4>
+                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded ${
+                            item.priority === 'CRITICAL' ? 'bg-red-500/20 text-red-500' : 
+                            item.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-500' : 'bg-blue-500/20 text-blue-500'
+                        }">${item.priority}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">${item.detail}</p>
+                </div>
+            `).join('');
+
+            const actionPlan = document.getElementById('action-plan');
+            actionPlan.innerHTML = data.insights.map(item => `
+                <li class="flex items-start gap-3 text-xs text-slate-300">
+                    <span class="w-1.5 h-1.5 rounded-full bg-c9-blue mt-1.5 shrink-0"></span>
+                    ${item.recommendation}
+                </li>
+            `).join('');
+
+            // Update Players
+            const playerGrid = document.getElementById('player-grid');
+            playerGrid.innerHTML = data.players.map(p => `
+                <div class="aspect-square rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center group hover:bg-c9-blue/10 hover:border-c9-blue/50 transition-all cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold mb-1 group-hover:scale-110 transition-transform">${p[0]}</div>
+                    <span class="text-[9px] font-bold text-slate-400 group-hover:text-white transition-colors">${p}</span>
+                </div>
+            `).join('');
+
+            // Reset Simulator
+            document.getElementById('what-if-query').value = data.whatIf.query;
+            document.getElementById('sim-result').classList.add('hidden');
+
+            lucide.createIcons();
+            
+            // Try to fetch real data if possible (demo-friendly)
+            try {
+                if (currentGame === 'VALORANT') {
+                    const res = await fetch(`${apiBase}/valorant/review/macro`, { method: 'POST' });
+                    if (res.ok) {
+                        const realVal = await res.json();
+                        // We could merge real data here if we wanted
+                    }
+                }
+            } catch (e) {
+                console.log("Using demo data fallback");
+            }
+        }
+
+        function runSimulation() {
+            const query = document.getElementById('what-if-query').value;
+            const resDiv = document.getElementById('sim-result');
+            
+            resDiv.classList.add('hidden');
+            
+            // Simulate processing
+            const btn = document.querySelector('button[onclick="runSimulation()"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'CALCULATING...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const data = demoData[currentGame].whatIf;
+                document.getElementById('sim-prob-actual').innerText = data.actual;
+                document.getElementById('sim-prob-alt').innerText = data.alt;
+                document.getElementById('sim-reasoning').innerText = data.reasoning;
+                
+                resDiv.classList.remove('hidden');
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 800);
+        }
+
+        // Initialize
+        updateDashboard();
+    </script>
+</body>
+</html>

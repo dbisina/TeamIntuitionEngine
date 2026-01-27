@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Intuition Engine | Elite Coaching OS</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        // Brand Aliases
+                        lol: { gold: '#C89B3C', hex: '#091428' },
+                        val: { red: '#FF4655', dark: '#0F1923' },
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- LIQUID GLASS DESIGN SYSTEM --- */
+        body {
+            background-color: #050507;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 1. The Glass */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+        }
+
+        .liquid-glass:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* 2. Light Mode Glass overrides */
+        /* 2. Light Mode Glass overrides */
+        html:not(.dark) .liquid-glass {
+            background: rgba(255, 255, 255, 0.85);
+            /* Increased opacity for better contrast */
+            backdrop-filter: blur(20px) saturate(200%);
+            -webkit-backdrop-filter: blur(20px) saturate(200%);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            /* Slate 400 border */
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+            /* Slate 900 text */
+        }
+
+        html:not(.dark) .text-slate-400 {
+            color: #64748b;
+            /* Slate 500 for better readability */
+        }
+
+        html:not(.dark) .text-white {
+            color: #0f172a;
+            /* Force white text to dark in light mode */
+        }
+
+
+        /* 3. The Glows (Colored Shadows) */
+        .glow-red {
+            box-shadow: 0 0 60px -15px rgba(255, 70, 85, 0.3);
+        }
+
+        .glow-gold {
+            box-shadow: 0 0 60px -15px rgba(200, 155, 60, 0.3);
+        }
+
+        .glow-blue {
+            box-shadow: 0 0 60px -15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 4. Portal Cards (3D Tilt Effect base) */
+        .portal-card {
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        /* Animations */
+        @keyframes drift {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(20px, -20px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .animate-drift {
+            animation: drift 10s infinite ease-in-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Utilities */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(to right, #fff, #94a3b8);
+        }
+
+        html:not(.dark) .text-gradient {
+            background-image: linear-gradient(to right, #0f172a, #475569);
+        }
+    </style>
+</head>
+
+<body class="selection:bg-blue-500/30">
+
+    <!-- NOISE TEXTURE OVERLAY -->
+    <div class="fixed inset-0 z-0 opacity-[0.03] pointer-events-none"
+        style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
+    </div>
+
+    <!-- ORBITAL BACKGROUNDS -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden">
+        <div id="orb-1"
+            class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/20 blur-[150px] animate-drift">
+        </div>
+        <div id="orb-2"
+            class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-600/20 blur-[150px] animate-drift"
+            style="animation-delay: -5s;"></div>
+    </div>
+
+
+    <!-- =========================================================================
+         STAGE 1: THE PORTAL (LANDING PAGE)
+         ========================================================================= -->
+    <div id="landing-portal"
+        class="relative z-10 min-h-screen flex flex-col items-center justify-center p-6 transition-all duration-700">
+
+        <!-- Header -->
+        <div class="text-center mb-16 fade-in">
+            <h1 class="font-display font-bold text-6xl md:text-7xl mb-4 tracking-tighter text-gradient">
+                Team Intuition
+            </h1>
+            <p class="text-slate-400 text-lg uppercase tracking-[0.3em] font-medium">Elite Coaching Operating System</p>
+        </div>
+
+        <!-- The Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl fade-in" style="animation-delay: 0.2s;">
+
+            <!-- LOL CARD -->
+            <button onclick="openConnectionModal('LOL')"
+                class="group portal-card relative h-[400px] w-full rounded-[32px] overflow-hidden cursor-pointer glow-gold">
+                <!-- Background Image (Dimmed) -->
+                <div
+                    class="absolute inset-0 bg-[url('./assets/lol-card.png')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-500">
+                </div>
+                <!-- Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+                <!-- Content -->
+                <div class="absolute bottom-0 left-0 p-10 w-full text-left">
+                    <div
+                        class="flex items-center gap-3 mb-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 duration-300">
+                        <span
+                            class="px-3 py-1 bg-lol-gold/20 text-lol-gold border border-lol-gold/30 rounded-full text-xs font-bold uppercase tracking-wider">MOBA</span>
+                        <span class="text-slate-300 text-xs font-mono">GRID WARPED</span>
+                    </div>
+                    <h2
+                        class="font-display font-bold text-5xl text-white mb-2 group-hover:text-lol-gold transition-colors">
+                        League of Legends</h2>
+                    <p class="text-slate-400 group-hover:text-white transition-colors">Summoner's Rift Analytics</p>
+                </div>
+            </button>
+
+            <!-- VALORANT CARD -->
+            <button onclick="openConnectionModal('VALORANT')"
+                class="group portal-card relative h-[400px] w-full rounded-[32px] overflow-hidden cursor-pointer glow-red">
+                <!-- Background Image -->
+                <div
+                    class="absolute inset-0 bg-[url('./assets/valorant-card.png')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-500">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+                <!-- Content -->
+                <div class="absolute bottom-0 left-0 p-10 w-full text-left">
+                    <div
+                        class="flex items-center gap-3 mb-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 duration-300">
+                        <span
+                            class="px-3 py-1 bg-val-red/20 text-val-red border border-val-red/30 rounded-full text-xs font-bold uppercase tracking-wider">FPS</span>
+                        <span class="text-slate-300 text-xs font-mono">GRID SERIES STATE</span>
+                    </div>
+                    <h2
+                        class="font-display font-bold text-5xl text-white mb-2 group-hover:text-val-red transition-colors">
+                        VALORANT</h2>
+                    <p class="text-slate-400 group-hover:text-white transition-colors">Tactical Shooter Intelligence</p>
+                </div>
+            </button>
+
+        </div>
+
+        <!-- Theme Toggle (Floating) -->
+        <div class="absolute top-6 right-6">
+            <button onclick="toggleTheme()"
+                class="p-3 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 transition-colors">
+                <i data-lucide="sun" class="w-5 h-5 dark:hidden text-amber-500"></i>
+                <i data-lucide="moon" class="w-5 h-5 hidden dark:block text-blue-400"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+         STAGE 2: THE CONNECTION MODAL
+         ========================================================================= -->
+    <div id="connection-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl hidden opacity-0 transition-opacity duration-500">
+        <div class="liquid-glass p-8 w-full max-w-md transform transition-all scale-95" id="modal-panel">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-display font-bold text-2xl" id="modal-game-title">Connect Game</h3>
+                <button onclick="closeConnectionModal()" class="text-slate-400 hover:text-white"><i
+                        data-lucide="x"></i></button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Simplified Series Finder -->
+                <div class="mb-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                    <label class="text-xs font-bold text-slate-500 uppercase block mb-3">Find Recent Series</label>
+                    <div class="space-y-3">
+                        <!-- Game Selector (auto-set based on card clicked) -->
+                        <input type="hidden" id="selected-title-id" value="6">
+
+                        <!-- Time Range Select -->
+                        <div class="relative">
+                            <label class="text-[10px] text-slate-500 uppercase mb-1 block">Time Range</label>
+                            <select id="time-range-select" onchange="fetchSeriesByTitle()"
+                                class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white appearance-none focus:outline-none focus:border-blue-500 transition-colors">
+                                <option value="24">Last 24 Hours</option>
+                                <option value="48">Last 48 Hours</option>
+                                <option value="168" selected>Last Week</option>
+                                <option value="720">Last 30 Days</option>
+                            </select>
+                            <i data-lucide="chevron-down"
+                                class="absolute right-3 bottom-2.5 w-3 h-3 text-slate-500 pointer-events-none"></i>
+                        </div>
+
+                        <!-- Series Select (populated from API) -->
+                        <div class="relative">
+                            <label class="text-[10px] text-slate-500 uppercase mb-1 block">Select Match</label>
+                            <select id="grid-series-select" onchange="onSeriesSelect()"
+                                class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white appearance-none focus:outline-none focus:border-blue-500 transition-colors">
+                                <option value="" disabled selected>Loading series...</option>
+                            </select>
+                            <i data-lucide="chevron-down"
+                                class="absolute right-3 bottom-2.5 w-3 h-3 text-slate-500 pointer-events-none"></i>
+                        </div>
+
+                        <!-- Status indicator -->
+                        <div id="series-status" class="text-[10px] text-slate-500 hidden">
+                            <span id="series-count">0</span> series found
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual ID Input -->
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Or Paste ID Directly</label>
+                    <div class="relative">
+                        <input type="text" id="series-id-input"
+                            class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:border-blue-500 transition-colors"
+                            placeholder="Paste GRID Series ID (e.g. 128491)">
+                        <i data-lucide="link" class="absolute right-3 top-3 w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div class="mt-2 text-[10px] text-slate-500">
+                        Need an ID? <a href="https://console.grid.gg/series" target="_blank"
+                            class="text-blue-400 hover:text-blue-300 underline">Find active series on GRID Console</a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="h-[1px] bg-white/10 flex-1"></div>
+                    <span class="text-xs text-slate-500 uppercase">OR USE PRESET</span>
+                    <div class="h-[1px] bg-white/10 flex-1"></div>
+                </div>
+
+                <!-- Recent Matches -->
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Recent Matches</label>
+                    <div id="recent-matches-list" class="space-y-2">
+                        <!-- Populated via JS -->
+                        <div class="text-xs text-slate-500 italic p-2">Loading history...</div>
+                    </div>
+                </div>
+
+                <button onclick="connectToDashboard('manual')"
+                    class="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 font-bold text-sm tracking-wide shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transform hover:-translate-y-0.5 transition-all">
+                    INITIALIZE SYSTEM
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+         STAGE 3: THE DASHBOARD (COMMAND CENTER)
+         ========================================================================= -->
+    <div id="dashboard-container" class="hidden min-h-screen p-6 opacity-0 transition-opacity duration-1000">
+
+        <header class="flex justify-between items-center mb-8 fade-in">
+            <div class="flex items-center gap-4">
+                <button onclick="returnToPortal()"
+                    class="p-2 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <div>
+                    <h1 class="font-display font-bold text-xl tracking-tight leading-none" id="dash-title">
+                        VALORANT <span class="text-slate-500 mx-2">//</span> <span class="text-blue-500">Live
+                            Analysis</span>
+                    </h1>
+                    <div class="flex items-center gap-3 mt-1 text-xs font-medium text-slate-400">
+                        <span
+                            class="flex items-center gap-1.5 text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            CONNECTED
+                        </span>
+                        <span id="match-map">Map: --</span>
+                        <span class="text-slate-600">|</span>
+                        <span id="match-score" class="text-white">Score: --</span>
+                        <span class="text-slate-600">|</span>
+                        <span id="match-mode">Mode: --</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-white/5">
+                    <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="space-y-6">
+
+            <!-- TOP ROW: MACRO INTELLIGENCE (BENTO GRID) -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 fade-in" style="animation-delay: 0.1s;">
+
+                <!-- Panel A: Game Review Agenda (Large) -->
+                <div class="lg:col-span-2 lg:row-span-2 liquid-glass p-6 glow-blue flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-display font-bold text-lg flex items-center gap-2">
+                            <i data-lucide="flag" class="text-blue-400 w-5 h-5"></i> Game Review Agenda
+                        </h3>
+                        <span
+                            class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20 font-mono">PRIORITY
+                            ITEMS</span>
+                    </div>
+
+                    <div id="review-agenda" class="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Dynamic content populated from API -->
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
+                            <span class="text-sm text-slate-400">Connect to a match to see review items</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel B: Team Synergy (Small - High Density) -->
+                <div class="liquid-glass p-5 flex flex-col relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="text-[10px] uppercase text-slate-400 font-bold">Team Synergy</div>
+                        <i data-lucide="users" class="w-4 h-4 text-emerald-500"></i>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-end">
+                            <span class="text-xs text-slate-400">KAST %</span>
+                            <span id="synergy-kast" class="text-xl font-display font-bold text-white">--</span>
+                        </div>
+                        <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div id="synergy-kast-bar" class="h-full bg-emerald-500 w-[0%]"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/5">
+                            <div>
+                                <div class="text-[10px] text-slate-500 uppercase">First Bloods</div>
+                                <div id="synergy-fb" class="text-sm font-bold text-emerald-400">--</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-slate-500 uppercase">Trade Kill Efficiency</div>
+                                <div id="synergy-trade" class="text-sm font-bold text-blue-400">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel D: Economy Overview (Small/Medium - High Density) -->
+                <div class="liquid-glass p-5 flex flex-col relative overflow-hidden">
+                    <div class="text-[10px] uppercase text-slate-400 font-bold mb-4">Economy Snapshot</div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">Team Bank</span>
+                            <span id="econ-bank" class="text-sm font-bold text-amber-400 font-mono">$--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">Avg Loadout</span>
+                            <span id="econ-loadout" class="text-sm font-bold text-white font-mono">$--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">Eco Wins</span>
+                            <span id="econ-wins" class="text-sm font-bold text-emerald-400">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Mini Chart Container -->
+                    <div class="mt-auto h-[60px] w-full">
+                        <canvas id="economyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Panel C: Team Performance Radar (Medium/Wide) -->
+                <div class="lg:col-span-2 liquid-glass p-5 flex flex-col relative">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="text-[10px] uppercase text-slate-400 font-bold">Team Performance Radar</div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span><span
+                                class="text-[10px] text-slate-400">Us</span>
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span><span
+                                class="text-[10px] text-slate-400">Them</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 w-full h-[140px] flex justify-center items-center">
+                        <canvas id="teamRadarChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MIDDLE ROW: STRATEGY ENGINE -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 fade-in" style="animation-delay: 0.2s;">
+
+                <!-- Moneyball Insights -->
+                <div class="liquid-glass p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="lightbulb" class="text-amber-500 w-5 h-5"></i>
+                            <h3 class="font-display font-bold text-lg">Moneyball Insights</h3>
+                        </div>
+                    </div>
+                    <!-- Dynamic Insights Container -->
+                    <div id="moneyball-insights" class="space-y-4">
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
+                            <span class="text-sm text-slate-400">Connect to a match to see AI-generated insights</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulator -->
+                <div class="liquid-glass p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="cpu" class="text-blue-500 w-5 h-5"></i>
+                            <h3 class="font-display font-bold text-lg">DeepSeek Simulator</h3>
+                        </div>
+                        <span id="sim-status" class="text-[10px] text-slate-500 hidden">Processing...</span>
+                    </div>
+
+                    <div class="relative mb-6">
+                        <input type="text" id="sim-input" value="What if we saved on Round 22?"
+                            class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono focus:border-blue-500 focus:outline-none transition-colors"
+                            placeholder="Enter your hypothetical scenario...">
+                        <button onclick="runSimulation()"
+                            class="absolute right-2 top-2 p-1.5 bg-blue-600 rounded-lg text-white hover:bg-blue-700 transition-colors">
+                            <i data-lucide="play" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="p-3 bg-red-500/10 rounded-lg text-center border border-red-500/10">
+                            <div class="text-[10px] text-red-400 font-bold uppercase">Option A (Actual)</div>
+                            <div id="sim-actual-prob" class="text-xl font-bold">15%</div>
+                            <div class="text-[10px] text-slate-400">Win Probability</div>
+                        </div>
+                        <div class="p-3 bg-emerald-500/10 rounded-lg text-center border border-emerald-500/20">
+                            <div class="text-[10px] text-emerald-400 font-bold uppercase">Option B (Simulated)</div>
+                            <div id="sim-alt-prob" class="text-xl font-bold text-emerald-400">60%</div>
+                            <div class="text-[10px] text-slate-400">Win Probability</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Reasoning -->
+                    <div id="sim-reasoning" class="mb-4 p-3 bg-white/5 rounded-lg hidden">
+                        <div class="text-[10px] text-blue-400 font-bold uppercase mb-1">AI Reasoning</div>
+                        <p id="sim-reasoning-text" class="text-xs text-slate-300"></p>
+                    </div>
+
+                    <div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase mb-2">Recent Simulations</div>
+                        <div id="sim-history" class="space-y-2">
+                            <div
+                                class="flex items-center gap-2 text-xs text-slate-400 bg-white/5 p-2 rounded hover:bg-white/10 cursor-pointer">
+                                <i data-lucide="history" class="w-3 h-3"></i> What if we played Sova instead of Gekko?
+                            </div>
+                            <div
+                                class="flex items-center gap-2 text-xs text-slate-400 bg-white/5 p-2 rounded hover:bg-white/10 cursor-pointer">
+                                <i data-lucide="history" class="w-3 h-3"></i> Force buy R3 outcome?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM ROW: PLAYERS -->
+            <div class="liquid-glass p-6 fade-in" style="animation-delay: 0.3s;">
+                <h3 class="font-display font-bold text-lg mb-4">Player Impact Assessment</h3>
+                <div id="player-cards" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <!-- Dynamic player cards populated from API -->
+                    <div class="col-span-full p-4 rounded-xl bg-white/5 border border-white/5 text-center">
+                        <span class="text-sm text-slate-400">Connect to a match to see player data</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- DASHBOARD CHARTS ---
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Team Performance Radar
+            const ctxRadar = document.getElementById('teamRadarChart').getContext('2d');
+            window.teamRadarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['Attack', 'Defense', 'Eco', 'First Bloods', 'Trades', 'Utility', 'Clutch'],
+                    datasets: [
+                        {
+                            label: 'Us',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#3b82f6', // Blue-500
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            pointBackgroundColor: '#3b82f6',
+                            borderWidth: 2,
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Them',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#ef4444', // Red-500
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            pointBackgroundColor: '#ef4444',
+                            borderWidth: 2,
+                            pointRadius: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false, color: '#94a3b8', backdropColor: 'transparent' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 9, family: 'Inter' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 2. Player Performance Radars - created dynamically when player cards are loaded
+
+            // 3. Economy Chart
+            const ctxEco = document.getElementById('economyChart').getContext('2d');
+            window.economyChart = new Chart(ctxEco, {
+                type: 'bar',
+                data: {
+                    labels: ['R-4', 'R-3', 'R-2', 'R-1', 'Now'],
+                    datasets: [{
+                        label: 'Eco Diff',
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: (c) => c.raw >= 0 ? '#10b981' : '#ef4444',
+                        borderRadius: 2,
+                        barThickness: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        });
+
+        // --- CORE LOGIC ---
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // Store selected game context
+        let currentGame = 'VALORANT'; // Default
+        let selectedSeriesData = null;
+
+        function openConnectionModal(game) {
+            const modal = document.getElementById('connection-modal');
+            const panel = document.getElementById('modal-panel');
+            const title = document.getElementById('modal-game-title');
+            const titleInput = document.getElementById('selected-title-id');
+
+            currentGame = game;
+
+            // Set title ID based on game (LOL=3, VALORANT=6)
+            const titleId = game === 'LOL' ? 3 : 6;
+            titleInput.value = titleId;
+
+            title.innerText = game === 'LOL' ? 'Connect League Data' : 'Connect VALORANT Data';
+
+            modal.classList.remove('hidden');
+
+            // Fetch series for this game immediately
+            fetchSeriesByTitle();
+            fetchRecentMatches();
+
+            // Trigger Animation
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                panel.classList.remove('scale-95');
+                panel.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeConnectionModal() {
+            const modal = document.getElementById('connection-modal');
+            const panel = document.getElementById('modal-panel');
+
+            modal.classList.add('opacity-0');
+            panel.classList.remove('scale-100');
+            panel.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // --- SIMPLIFIED GRID API INTEGRATION ---
+
+        async function fetchSeriesByTitle() {
+            const titleId = document.getElementById('selected-title-id').value;
+            const hours = document.getElementById('time-range-select').value;
+            const seriesSelect = document.getElementById('grid-series-select');
+            const statusDiv = document.getElementById('series-status');
+            const countSpan = document.getElementById('series-count');
+
+            seriesSelect.innerHTML = '<option value="" disabled selected>Loading series...</option>';
+
+            try {
+                const response = await fetch(`/api/v1/grid/series-by-title?title_id=${titleId}&hours=${hours}&limit=20`);
+                const data = await response.json();
+
+                seriesSelect.innerHTML = '<option value="" disabled selected>Select Match...</option>';
+
+                if (data.data && data.data.allSeries && data.data.allSeries.edges) {
+                    const edges = data.data.allSeries.edges;
+                    const totalCount = data.data.allSeries.totalCount || edges.length;
+
+                    if (edges.length === 0) {
+                        seriesSelect.innerHTML = '<option value="" disabled selected>No series found in this time range</option>';
+                        statusDiv.classList.add('hidden');
+                        return;
+                    }
+
+                    edges.forEach(edge => {
+                        const series = edge.node;
+                        const team1 = series.teams?.[0]?.baseInfo?.name || 'TBD';
+                        const team2 = series.teams?.[1]?.baseInfo?.name || 'TBD';
+                        const scheduled = series.startTimeScheduled;
+                        const timeStr = scheduled ? new Date(scheduled).toLocaleString() : 'N/A';
+                        const tournamentName = series.tournament?.name || '';
+
+                        const option = document.createElement('option');
+                        option.value = series.id;
+                        option.textContent = `${team1} vs ${team2} (${timeStr})`;
+                        option.dataset.team1 = team1;
+                        option.dataset.team2 = team2;
+                        option.dataset.title = currentGame;
+                        option.dataset.tournament = tournamentName;
+
+                        seriesSelect.appendChild(option);
+                    });
+
+                    // Show count
+                    countSpan.textContent = totalCount;
+                    statusDiv.classList.remove('hidden');
+                } else if (data.errors) {
+                    console.error('API Error:', data.errors);
+                    seriesSelect.innerHTML = '<option value="" disabled selected>API Error - Try demo IDs</option>';
+                    statusDiv.classList.add('hidden');
+                } else {
+                    seriesSelect.innerHTML = '<option value="" disabled selected>No series found</option>';
+                    statusDiv.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error fetching series:', error);
+                seriesSelect.innerHTML = '<option value="" disabled selected>Connection error</option>';
+                statusDiv.classList.add('hidden');
+            }
+
+            lucide.createIcons();
+        }
+
+        // Legacy function - kept for backwards compatibility but not used in simplified flow
+        // async function onTournamentSelect() { ... }
+
+        function onSeriesSelect() {
+            const seriesSelect = document.getElementById('grid-series-select');
+            const seriesId = seriesSelect.value;
+            const input = document.getElementById('series-id-input');
+            input.value = seriesId;
+
+            // Capture metadata for saving
+            const selectedOption = seriesSelect.options[seriesSelect.selectedIndex];
+            if (selectedOption) {
+                selectedSeriesData = {
+                    series_id: seriesId,
+                    title: selectedOption.dataset.title || "Unknown",
+                    team1_name: selectedOption.dataset.team1 || "Team 1",
+                    team2_name: selectedOption.dataset.team2 || "Team 2"
+                };
+            }
+
+            // Flash effect to show it was populated
+            input.classList.add('bg-blue-500/20', 'border-blue-500');
+            setTimeout(() => {
+                input.classList.remove('bg-blue-500/20', 'border-blue-500');
+            }, 500);
+        }
+
+        async function fetchRecentMatches() {
+            const list = document.getElementById('recent-matches-list');
+            try {
+                const response = await fetch('/api/v1/matches/recent');
+                const matches = await response.json();
+
+                if (matches.length === 0) {
+                    list.innerHTML = '<div class="text-xs text-slate-500 italic p-2">No recent history</div>';
+                    return;
+                }
+
+                list.innerHTML = matches.map(m => `
+                    <button onclick="selectRecentMatch('${m.series_id}')"
+                        class="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-blue-500/30 transition-all text-left group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-300 font-bold text-xs ring-1 ring-white/5">
+                            VS</div>
+                        <div>
+                            <div class="font-bold text-sm group-hover:text-blue-400 transition-colors">${m.team1_name} vs ${m.team2_name}</div>
+                            <div class="text-[10px] text-slate-400">${m.title} • ${new Date(m.match_time).toLocaleDateString()}</div>
+                        </div>
+                        <i data-lucide="arrow-right"
+                            class="w-4 h-4 ml-auto text-slate-500 group-hover:text-white transform group-hover:translate-x-1 transition-all"></i>
+                    </button>
+                `).join('');
+
+                // Re-init icons
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error("Error fetching recent matches", error);
+                list.innerHTML = '<div class="text-xs text-red-500 italic p-2">Failed to load history</div>';
+            }
+        }
+
+        function selectRecentMatch(seriesId) {
+            document.getElementById('series-id-input').value = seriesId;
+            // Optionally auto-connect
+        }
+
+        async function saveMatchToHistory() {
+            if (!selectedSeriesData) return;
+
+            // If input ID doesn't match selected data, don't save (user changed it manually)
+            const currentId = document.getElementById('series-id-input').value;
+            if (currentId !== selectedSeriesData.series_id) return;
+
+            try {
+                await fetch('/api/v1/matches/recent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(selectedSeriesData)
+                });
+                console.log("Match saved to history");
+            } catch (e) {
+                console.error("Failed to save match history", e);
+            }
+        }
+
+        async function connectToDashboard(source) {
+            // Save history if applicable
+            saveMatchToHistory();
+
+            const seriesId = document.getElementById('series-id-input').value;
+            if (!seriesId) {
+                alert('Please select a series or enter a Series ID');
+                return;
+            }
+
+            // 1. Hide Modal & Portal
+            closeConnectionModal();
+
+            const portal = document.getElementById('landing-portal');
+            portal.style.transform = 'scale(1.1)';
+            portal.style.opacity = '0';
+
+            setTimeout(async () => {
+                portal.classList.add('hidden');
+
+                // 2. Show Dashboard
+                const dash = document.getElementById('dashboard-container');
+                dash.classList.remove('hidden');
+                setTimeout(() => dash.classList.remove('opacity-0'), 50);
+
+                // 3. Update header with game info
+                const titleEl = document.getElementById('dash-title');
+                const gameName = currentGame === 'LoL' ? 'League of Legends' : 'VALORANT';
+                titleEl.innerHTML = `${gameName} <span class="text-slate-500 mx-2">//</span> <span class="text-blue-500">Live Analysis</span>`;
+
+                // Update match info if we have metadata
+                if (selectedSeriesData) {
+                    document.getElementById('match-map').textContent = `${selectedSeriesData.team1_name} vs ${selectedSeriesData.team2_name}`;
+                }
+
+                // 4. Fetch real analysis data
+                await loadDashboardData(seriesId);
+
+            }, 700);
+        }
+
+        // Fetch and populate dashboard with real data
+        async function loadDashboardData(seriesId) {
+            console.log(`Loading data for series: ${seriesId}`);
+
+            try {
+                // Use the appropriate endpoint based on game type
+                const endpoint = currentGame === 'LOL'
+                    ? `/api/v1/coach/full-analysis/${seriesId}`
+                    : `/api/v1/coach/full-analysis-valorant?series_id=${seriesId}`;
+
+                const response = await fetch(endpoint, { method: 'POST' });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    console.log('Analysis data loaded:', data);
+
+                    // Update dashboard with real data
+                    updateDashboardWithData(data);
+                } else {
+                    console.error('Analysis failed:', data);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Dashboard will show demo data as fallback
+            }
+        }
+
+        // Update all dashboard panels with real data
+        function updateDashboardWithData(data) {
+            // Update match header info
+            if (data.match) {
+                const match = data.match;
+                document.getElementById('match-score').textContent = `Score: ${match.team_1_score || 0}-${match.team_2_score || 0}`;
+                document.getElementById('match-map').textContent = `Map: ${match.map_name || 'Unknown'}`;
+                document.getElementById('match-mode').textContent = `Mode: ${match.match_format || 'Ranked'}`;
+            }
+
+            // Update Game Review Agenda if macro_review exists
+            if (data.macro_review) {
+                updateGameReviewAgenda(data.macro_review);
+            }
+
+            // Update Team Synergy Stats
+            if (data.macro_review) {
+                const review = data.macro_review;
+                // KAST %
+                const kast = review.team_kast || 72;
+                document.getElementById('synergy-kast').textContent = `${kast}%`;
+                document.getElementById('synergy-kast-bar').style.width = `${kast}%`;
+                // First Bloods
+                document.getElementById('synergy-fb').textContent = review.first_blood_wins || '6/11';
+                // Trade Efficiency
+                document.getElementById('synergy-trade').textContent = review.trade_efficiency || '78%';
+            }
+
+            // Update Economy Snapshot
+            if (data.macro_review || data.match) {
+                const econ = data.macro_review?.economy_summary || {};
+                document.getElementById('econ-bank').textContent = `$${econ.avg_team_bank || '12,500'}`;
+                document.getElementById('econ-loadout').textContent = `$${econ.avg_loadout || '4,200'}`;
+                document.getElementById('econ-wins').textContent = econ.eco_wins || '3/5';
+
+                // Update economy chart with mock trend data
+                if (window.economyChart) {
+                    window.economyChart.data.datasets[0].data = econ.trend || [2500, -1000, 3500, -2000, 1500];
+                    window.economyChart.update();
+                }
+            }
+
+            // Update Team Radar Chart
+            if (data.macro_review) {
+                const review = data.macro_review;
+                if (window.teamRadarChart) {
+                    // Us (blue team)
+                    window.teamRadarChart.data.datasets[0].data = [
+                        review.attack_rating || 75,
+                        review.defense_rating || 68,
+                        review.economy_rating || 72,
+                        review.first_blood_rating || 80,
+                        review.trade_rating || 65,
+                        review.utility_rating || 70,
+                        review.clutch_rating || 55
+                    ];
+                    // Them (red team) - inverse/opponent data
+                    window.teamRadarChart.data.datasets[1].data = [
+                        100 - (review.attack_rating || 75),
+                        100 - (review.defense_rating || 68),
+                        100 - (review.economy_rating || 72),
+                        100 - (review.first_blood_rating || 80),
+                        100 - (review.trade_rating || 65),
+                        100 - (review.utility_rating || 70),
+                        100 - (review.clutch_rating || 55)
+                    ];
+                    window.teamRadarChart.update();
+                }
+            }
+
+            // Update Player Cards
+            if (data.match && data.match.players) {
+                updatePlayerCards(data.match.players);
+            }
+
+            // Update Moneyball Insights
+            if (data.recommendations) {
+                updateMoneyballInsights(data.recommendations);
+            }
+        }
+
+        function updateGameReviewAgenda(review) {
+            const container = document.getElementById('review-agenda');
+
+            // Build priority review items
+            const items = [];
+
+            if (review.priority_review_rounds && review.priority_review_rounds.length > 0) {
+                review.priority_review_rounds.forEach((round, i) => {
+                    items.push(`
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-blue-500/30 transition-colors cursor-pointer">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">R${round.round || i + 1}</span>
+                                <span class="text-xs text-slate-400">${round.phase || 'Attack'}</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">${round.description || round}</p>
+                            ${round.impact ? `<p class="text-xs text-slate-400 mt-1">${round.impact}</p>` : ''}
+                        </div>
+                    `);
+                });
+            }
+
+            // Add training recommendations
+            if (review.training_recommendations && review.training_recommendations.length > 0) {
+                items.push(`
+                    <div class="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                        <div class="text-xs font-bold text-amber-400 uppercase mb-2">Training Focus</div>
+                        <ul class="space-y-1">
+                            ${review.training_recommendations.slice(0, 3).map(rec => `
+                                <li class="text-xs text-slate-300 flex items-center gap-2">
+                                    <i data-lucide="target" class="w-3 h-3 text-amber-500"></i> ${rec}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `);
+            }
+
+            if (items.length > 0) {
+                container.innerHTML = items.join('');
+                lucide.createIcons();
+            }
+        }
+
+        function updatePlayerCards(players) {
+            const container = document.getElementById('player-cards');
+
+            const cards = players.slice(0, 5).map(player => {
+                const kda = player.stats?.kda || ((player.kills + player.assists) / Math.max(player.deaths, 1)).toFixed(1);
+                const acs = player.stats?.acs || Math.round(player.kills * 25 + player.assists * 10);
+
+                return `
+                    <div class="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-blue-500/30 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                                <span class="text-sm font-bold">${player.name?.charAt(0) || 'P'}</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">${player.name || 'Unknown'}</div>
+                                <div class="text-[10px] text-slate-400">${player.agent || player.role || 'Agent'}</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div>
+                                <div class="text-lg font-bold text-white">${player.kills || 0}</div>
+                                <div class="text-[10px] text-slate-500">K</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold text-white">${player.deaths || 0}</div>
+                                <div class="text-[10px] text-slate-500">D</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold text-white">${player.assists || 0}</div>
+                                <div class="text-[10px] text-slate-500">A</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-white/5 flex justify-between text-xs">
+                            <span class="text-slate-400">KDA</span>
+                            <span class="font-bold ${parseFloat(kda) >= 1.5 ? 'text-emerald-400' : 'text-white'}">${kda}</span>
+                        </div>
+                        <div class="flex justify-between text-xs mt-1">
+                            <span class="text-slate-400">ACS</span>
+                            <span class="font-bold text-blue-400">${acs}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = cards.join('');
+        }
+
+        function updateMoneyballInsights(recommendations) {
+            const container = document.getElementById('moneyball-insights');
+
+            const items = [];
+
+            if (recommendations.priority_review_rounds) {
+                recommendations.priority_review_rounds.slice(0, 2).forEach(item => {
+                    items.push(`
+                        <div class="p-3 rounded-lg bg-white/5 border border-white/5">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                                <span class="text-xs font-bold text-amber-400">Key Pattern</span>
+                            </div>
+                            <p class="text-sm text-white">${typeof item === 'string' ? item : item.description || 'Critical decision point'}</p>
+                        </div>
+                    `);
+                });
+            }
+
+            if (recommendations.training_focus) {
+                items.push(`
+                    <div class="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-emerald-500"></i>
+                            <span class="text-xs font-bold text-emerald-400">Improvement Area</span>
+                        </div>
+                        <p class="text-sm text-white">${recommendations.training_focus[0] || 'Focus on economy management'}</p>
+                    </div>
+                `);
+            }
+
+            if (items.length > 0) {
+                container.innerHTML = items.join('');
+                lucide.createIcons();
+            }
+        }
+
+        // DeepSeek Simulator - Run hypothetical scenario
+        let simulationHistory = [];
+
+        async function runSimulation() {
+            const input = document.getElementById('sim-input');
+            const statusEl = document.getElementById('sim-status');
+            const actualProbEl = document.getElementById('sim-actual-prob');
+            const altProbEl = document.getElementById('sim-alt-prob');
+            const reasoningDiv = document.getElementById('sim-reasoning');
+            const reasoningText = document.getElementById('sim-reasoning-text');
+            const historyDiv = document.getElementById('sim-history');
+
+            const scenario = input.value.trim();
+            if (!scenario) {
+                alert('Please enter a hypothetical scenario');
+                return;
+            }
+
+            // Show loading state
+            statusEl.classList.remove('hidden');
+            statusEl.textContent = 'Processing...';
+
+            try {
+                // Build request based on game type
+                const seriesId = document.getElementById('series-id-input').value || 'demo';
+
+                const requestBody = {
+                    scenario: scenario,
+                    game_state: {
+                        timestamp: 1200,
+                        game_phase: "mid",
+                        gold_difference: 2500
+                    },
+                    context: {
+                        game: currentGame,
+                        series_id: seriesId
+                    }
+                };
+
+                const response = await fetch('/api/v1/simulate/scenario-simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success' || data.primary_scenario) {
+                    // Parse results
+                    const primary = data.primary_scenario || {};
+                    const alternative = data.alternative_scenario || {};
+
+                    // Update probabilities
+                    const actualProb = Math.round((primary.success_probability || 0.15) * 100);
+                    const altProb = Math.round((alternative.success_probability || 0.60) * 100);
+
+                    actualProbEl.textContent = `${actualProb}%`;
+                    altProbEl.textContent = `${altProb}%`;
+
+                    // Show reasoning
+                    const reasoning = primary.expected_outcome || data.recommendation || 'Analysis complete.';
+                    reasoningText.textContent = reasoning;
+                    reasoningDiv.classList.remove('hidden');
+
+                    // Add to history
+                    simulationHistory.unshift(scenario);
+                    if (simulationHistory.length > 5) simulationHistory.pop();
+
+                    // Update history UI
+                    historyDiv.innerHTML = simulationHistory.map(s => `
+                        <div class="flex items-center gap-2 text-xs text-slate-400 bg-white/5 p-2 rounded hover:bg-white/10 cursor-pointer" onclick="document.getElementById('sim-input').value='${s.replace(/'/g, "\\'")}'; runSimulation();">
+                            <i data-lucide="history" class="w-3 h-3"></i> ${s.length > 40 ? s.substring(0, 40) + '...' : s}
+                        </div>
+                    `).join('');
+
+                    lucide.createIcons();
+
+                    statusEl.textContent = 'Complete';
+                    setTimeout(() => statusEl.classList.add('hidden'), 2000);
+
+                    console.log('Simulation result:', data);
+                } else {
+                    statusEl.textContent = 'Error';
+                    console.error('Simulation error:', data);
+                }
+            } catch (error) {
+                console.error('Simulation API error:', error);
+                statusEl.textContent = 'API Error';
+
+                // Fallback: Show mock results
+                actualProbEl.textContent = '25%';
+                altProbEl.textContent = '65%';
+                reasoningText.textContent = 'Based on similar scenarios, the alternative approach has a higher success probability.';
+                reasoningDiv.classList.remove('hidden');
+            }
+        }
+
+        function returnToPortal() {
+            const dash = document.getElementById('dashboard-container');
+            const portal = document.getElementById('landing-portal');
+
+            dash.classList.add('opacity-0');
+            setTimeout(() => {
+                dash.classList.add('hidden');
+                portal.classList.remove('hidden');
+                setTimeout(() => {
+                    portal.style.transform = 'scale(1)';
+                    portal.style.opacity = '1';
+                }, 50);
+            }, 500);
+        }
+    </script>
+</body>
+
+</html>
