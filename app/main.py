@@ -23,7 +23,11 @@ def get_application() -> FastAPI:
     # Enable CORS for dashboard
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=[
+            "http://localhost:3000",
+            "https://intuition-production.up.railway.app",
+            "*"  # Keep wildcard for now as fallback/dev, but specific origins are safer with credentials
+        ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
