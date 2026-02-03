@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ValorantInsightsView } from './ValorantInsightsView';
 import { LolInsightsView } from './LolInsightsView';
 import { Users, ChevronRight, RefreshCw } from 'lucide-react';
+import { getApiUrl } from '@/lib/utils';
 
 interface InsightsViewProps {
   game?: string;
@@ -29,7 +30,7 @@ export function InsightsView({ game = "VALORANT", seriesId }: InsightsViewProps)
         
         try {
              // 1. Fetch Series Data
-             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+             const API_BASE_URL = getApiUrl();
              const res = await fetch(`${API_BASE_URL}/api/v1/grid/series/${seriesId}`);
              if (!res.ok) throw new Error("Failed to load match data");
              

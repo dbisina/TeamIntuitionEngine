@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ValorantMacroView } from './ValorantMacroView';
 import { LolMacroView } from './LolMacroView';
 import { getCachedSeries, setCachedSeries } from '@/lib/matchCache';
+import { getApiUrl } from '@/lib/utils';
 
 interface MacroReviewViewProps {
   game?: string;
@@ -44,7 +45,7 @@ export function MacroReviewView({ game = "VALORANT", seriesId }: MacroReviewView
       }
 
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE_URL = getApiUrl();
         const res = await fetch(`${API_BASE_URL}/api/v1/grid/series/${seriesId}`);
         if (!res.ok) throw new Error("Failed to fetch");
 

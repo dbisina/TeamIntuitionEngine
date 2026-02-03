@@ -10,6 +10,7 @@ import {
   Trophy,
   BarChart2
 } from 'lucide-react';
+import { getApiUrl } from '@/lib/utils';
 
 export function LolInsightsView({ player, teamName, seriesId }: { player: any, teamName: string, seriesId?: string }) {
   const [aiInsights, setAiInsights] = useState<{positive: any[], negative: any[], outliers: any[]} | null>(null);
@@ -21,7 +22,7 @@ export function LolInsightsView({ player, teamName, seriesId }: { player: any, t
       if (!player?.player_name || !seriesId) return;
       setAiLoading(true);
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE_URL = getApiUrl();
         const res = await fetch(`${API_BASE_URL}/api/v1/grid/player-insights/${seriesId}/${encodeURIComponent(player.player_name)}`, {
             method: 'POST'
         });

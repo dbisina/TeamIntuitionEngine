@@ -20,6 +20,7 @@ import {
   KASTImpactStat,
   EconomyStats
 } from '@/lib/matchCache';
+import { getApiUrl } from '@/lib/utils';
 
 // Extended interfaces for team-specific data
 interface PlayerScoreboardStat {
@@ -129,7 +130,7 @@ export function ValorantMacroView({ teamName, matchData, seriesId }: { teamName:
 
       try {
         console.log(`[ValorantMacroView] Fetching stats for series: ${seriesId}, team: ${teamName}`);
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE_URL = getApiUrl();
         const res = await fetch(`${API_BASE_URL}/api/v1/grid/enhanced-review/${seriesId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -170,7 +171,7 @@ export function ValorantMacroView({ teamName, matchData, seriesId }: { teamName:
         if (!reviewData) {
           setReviewLoading(true);
           console.log(`[ValorantMacroView] Fetching AI review in background...`);
-          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const API_BASE_URL = getApiUrl();
 
           fetch(`${API_BASE_URL}/api/v1/grid/macro-review/${seriesId}`, { method: 'POST' })
             .then(r => r.ok ? r.json() : null)
@@ -196,7 +197,7 @@ export function ValorantMacroView({ teamName, matchData, seriesId }: { teamName:
             return;
           }
           try {
-            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const API_BASE_URL = getApiUrl();
             const retryRes = await fetch(`${API_BASE_URL}/api/v1/grid/enhanced-review/${seriesId}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },

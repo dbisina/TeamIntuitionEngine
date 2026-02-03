@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Link as LinkIcon, Clock, ArrowRight } from 'lucide-react';
+import { getApiUrl } from '@/lib/utils';
 
 interface InitializationViewProps {
   game: string;
@@ -53,7 +54,8 @@ export function InitializationView({ game, onConnect, onBack }: InitializationVi
           const hours = getHours();
           
           // Build query with optional team filter
-          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          // Build query with optional team filter
+          const API_BASE_URL = getApiUrl();
           let url = `${API_BASE_URL}/api/v1/grid/series-by-title?title_id=${titleId}&hours=${hours}&limit=20`;
           if (timeFilter === 'ongoing') {
             url += '&status=ongoing';

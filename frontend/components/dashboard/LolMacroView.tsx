@@ -14,6 +14,7 @@ import {
   Brain,
   Loader2
 } from 'lucide-react';
+import { getApiUrl } from '@/lib/utils';
 
 interface MacroReviewData {
   executive_summary?: string;
@@ -32,7 +33,7 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
       if (!seriesId) return;
       setLoading(true);
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE_URL = getApiUrl();
         const res = await fetch(`${API_BASE_URL}/api/v1/grid/macro-review/${seriesId}`, {
           method: 'POST'
         });

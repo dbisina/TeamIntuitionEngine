@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ValorantHypotheticalView } from './ValorantHypotheticalView';
 import { LolHypotheticalView } from './LolHypotheticalView';
 import { getCachedSeries, setCachedSeries } from '@/lib/matchCache';
+import { getApiUrl } from '@/lib/utils';
 
 interface HypotheticalViewProps {
   game?: string;
@@ -40,8 +41,9 @@ export function HypotheticalView({ game = "VALORANT", seriesId }: HypotheticalVi
         return;
       }
 
+      const API_BASE_URL = getApiUrl();
+
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
         const res = await fetch(`${API_BASE_URL}/api/v1/grid/series/${seriesId}`);
         if (!res.ok) throw new Error("Failed");
 

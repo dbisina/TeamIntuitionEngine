@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getApiUrl } from '@/lib/utils';
 
 interface WhatIfSimulatorProps {
   seriesId: string;
@@ -44,7 +45,7 @@ export function WhatIfSimulator({ seriesId, initialRound, onClose }: WhatIfSimul
     setError(null);
     
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_BASE_URL = getApiUrl();
       const response = await fetch(`${API_BASE_URL}/api/v1/grid/what-if/${seriesId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

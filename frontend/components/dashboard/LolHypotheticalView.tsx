@@ -11,6 +11,7 @@ import {
   TrendingUp,
   RotateCcw
 } from 'lucide-react';
+import { getApiUrl } from '@/lib/utils';
 
 export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string; teamName?: string }) {
   const [scenario, setScenario] = useState('');
@@ -34,7 +35,7 @@ export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string;
     setError(null);
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_BASE_URL = getApiUrl();
       const response = await fetch(`${API_BASE_URL}/api/v1/grid/hypothetical/lol`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

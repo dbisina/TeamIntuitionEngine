@@ -15,7 +15,9 @@ import {
   VolumeX,
   Sparkles as SparklesIcon
 } from 'lucide-react';
+} from 'lucide-react';
 import { getCachedSeries } from '@/lib/matchCache';
+import { getApiUrl } from '@/lib/utils';
 
 // Voice Narration Hook
 function useVoiceNarration() {
@@ -147,7 +149,7 @@ export function ValorantHypotheticalView({ seriesId, teamName }: ValorantHypothe
       }
 
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE_URL = getApiUrl();
         const response = await fetch(`${API_BASE_URL}/api/v1/grid/series/${seriesId}`);
         if (response.ok) {
           const data = await response.json();
@@ -176,7 +178,7 @@ export function ValorantHypotheticalView({ seriesId, teamName }: ValorantHypothe
     if (!seriesId) return;
     const fetchTimeline = async () => {
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE_URL = getApiUrl();
         const res = await fetch(`${API_BASE_URL}/api/v1/grid/round-timeline/${seriesId}`);
         if (res.ok) {
           const data = await res.json();
@@ -221,7 +223,7 @@ export function ValorantHypotheticalView({ seriesId, teamName }: ValorantHypothe
 
     try {
       // Use context-aware endpoint if seriesId available, otherwise fallback to generic
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_BASE_URL = getApiUrl();
       const endpoint = seriesId
         ? `${API_BASE_URL}/api/v1/grid/what-if/${seriesId}`
         : `${API_BASE_URL}/api/v1/grid/hypothetical/valorant`;
