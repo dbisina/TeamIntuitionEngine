@@ -41,7 +41,8 @@ export function HypotheticalView({ game = "VALORANT", seriesId }: HypotheticalVi
       }
 
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/grid/series/${seriesId}`);
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_BASE_URL}/api/v1/grid/series/${seriesId}`);
         if (!res.ok) throw new Error("Failed");
 
         const data = await res.json();

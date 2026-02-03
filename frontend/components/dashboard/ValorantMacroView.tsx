@@ -129,7 +129,8 @@ export function ValorantMacroView({ teamName, matchData, seriesId }: { teamName:
 
       try {
         console.log(`[ValorantMacroView] Fetching stats for series: ${seriesId}, team: ${teamName}`);
-        const res = await fetch(`http://localhost:8000/api/v1/grid/enhanced-review/${seriesId}`, {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_BASE_URL}/api/v1/grid/enhanced-review/${seriesId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ team_name: teamName })
@@ -169,8 +170,9 @@ export function ValorantMacroView({ teamName, matchData, seriesId }: { teamName:
         if (!reviewData) {
           setReviewLoading(true);
           console.log(`[ValorantMacroView] Fetching AI review in background...`);
+          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-          fetch(`http://localhost:8000/api/v1/grid/macro-review/${seriesId}`, { method: 'POST' })
+          fetch(`${API_BASE_URL}/api/v1/grid/macro-review/${seriesId}`, { method: 'POST' })
             .then(r => r.ok ? r.json() : null)
             .then(aiData => {
               if (aiData?.review) {
@@ -194,7 +196,8 @@ export function ValorantMacroView({ teamName, matchData, seriesId }: { teamName:
             return;
           }
           try {
-            const retryRes = await fetch(`http://localhost:8000/api/v1/grid/enhanced-review/${seriesId}`, {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const retryRes = await fetch(`${API_BASE_URL}/api/v1/grid/enhanced-review/${seriesId}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ team_name: teamName })

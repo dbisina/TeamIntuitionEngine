@@ -53,7 +53,8 @@ export function InitializationView({ game, onConnect, onBack }: InitializationVi
           const hours = getHours();
           
           // Build query with optional team filter
-          let url = `http://localhost:8000/api/v1/grid/series-by-title?title_id=${titleId}&hours=${hours}&limit=20`;
+          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          let url = `${API_BASE_URL}/api/v1/grid/series-by-title?title_id=${titleId}&hours=${hours}&limit=20`;
           if (timeFilter === 'ongoing') {
             url += '&status=ongoing';
           }

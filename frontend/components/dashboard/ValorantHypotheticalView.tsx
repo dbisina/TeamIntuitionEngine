@@ -147,7 +147,8 @@ export function ValorantHypotheticalView({ seriesId, teamName }: ValorantHypothe
       }
 
       try {
-        const response = await fetch(`http://localhost:8000/api/v1/grid/series/${seriesId}`);
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${API_BASE_URL}/api/v1/grid/series/${seriesId}`);
         if (response.ok) {
           const data = await response.json();
           const gs = data.game_state;
@@ -175,7 +176,8 @@ export function ValorantHypotheticalView({ seriesId, teamName }: ValorantHypothe
     if (!seriesId) return;
     const fetchTimeline = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/grid/round-timeline/${seriesId}`);
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_BASE_URL}/api/v1/grid/round-timeline/${seriesId}`);
         if (res.ok) {
           const data = await res.json();
           setTimelineData(data);
@@ -219,9 +221,10 @@ export function ValorantHypotheticalView({ seriesId, teamName }: ValorantHypothe
 
     try {
       // Use context-aware endpoint if seriesId available, otherwise fallback to generic
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const endpoint = seriesId
-        ? `http://localhost:8000/api/v1/grid/what-if/${seriesId}`
-        : 'http://localhost:8000/api/v1/grid/hypothetical/valorant';
+        ? `${API_BASE_URL}/api/v1/grid/what-if/${seriesId}`
+        : `${API_BASE_URL}/api/v1/grid/hypothetical/valorant`;
       
       const body = seriesId
         ? { scenario: targetScenario, round_number: round || roundNumber, team_name: teamName }

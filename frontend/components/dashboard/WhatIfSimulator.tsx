@@ -44,7 +44,8 @@ export function WhatIfSimulator({ seriesId, initialRound, onClose }: WhatIfSimul
     setError(null);
     
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/grid/what-if/${seriesId}`, {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_BASE_URL}/api/v1/grid/what-if/${seriesId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scenario, round_number: roundNumber }),

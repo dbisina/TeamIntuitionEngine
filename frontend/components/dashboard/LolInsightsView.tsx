@@ -21,7 +21,8 @@ export function LolInsightsView({ player, teamName, seriesId }: { player: any, t
       if (!player?.player_name || !seriesId) return;
       setAiLoading(true);
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/grid/player-insights/${seriesId}/${encodeURIComponent(player.player_name)}`, {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_BASE_URL}/api/v1/grid/player-insights/${seriesId}/${encodeURIComponent(player.player_name)}`, {
             method: 'POST'
         });
         if (res.ok) {

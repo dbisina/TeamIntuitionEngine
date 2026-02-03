@@ -32,7 +32,8 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
       if (!seriesId) return;
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/grid/macro-review/${seriesId}`, {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${API_BASE_URL}/api/v1/grid/macro-review/${seriesId}`, {
           method: 'POST'
         });
         if (res.ok) {
