@@ -15,7 +15,7 @@ import {
   VolumeX,
   Sparkles as SparklesIcon
 } from 'lucide-react';
-} from 'lucide-react';
+
 import { getCachedSeries } from '@/lib/matchCache';
 import { getApiUrl } from '@/lib/utils';
 
