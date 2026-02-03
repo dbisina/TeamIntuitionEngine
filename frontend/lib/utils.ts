@@ -6,9 +6,17 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getApiUrl() {
-    const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    if (!url.startsWith('http')) {
-        return `https://${url}`;
+    if (process.env.NEXT_PUBLIC_API_URL) {
+        let url = process.env.NEXT_PUBLIC_API_URL;
+        if (!url.startsWith('http')) {
+            url = `https://${url}`;
+        }
+        return url;
     }
-    return url;
+
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://backend-production-efe0.up.railway.app';
+    }
+
+    return 'http://localhost:8000';
 }

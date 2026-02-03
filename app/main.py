@@ -26,7 +26,6 @@ def get_application() -> FastAPI:
         allow_origins=[
             "http://localhost:3000",
             "https://intuition-production.up.railway.app",
-            "*"  # Keep wildcard for now as fallback/dev, but specific origins are safer with credentials
         ],
         allow_credentials=True,
         allow_methods=["*"],
