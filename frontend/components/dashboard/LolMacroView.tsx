@@ -32,7 +32,7 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
       if (!seriesId) return;
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/grid/macro-review/${seriesId}`, {
+        const res = await fetch(`http://localhost:8000/api/v1/grid/macro-review/${seriesId}`, {
           method: 'POST'
         });
         if (res.ok) {
@@ -68,18 +68,18 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
   return (
     <div className="space-y-6 pb-20">
       
-      {/* Live Data Indicator */}
+      {/* Match Status Indicator */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${seriesId ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${matchData?.winner ? 'bg-slate-500' : (seriesId ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500')}`}></div>
           <span className="text-xs text-slate-400 font-mono uppercase tracking-wider">
-            {seriesId ? `Live: ${seriesId}` : 'No Series Connected'}
+            {seriesId ? (matchData?.winner ? `VOD Review: ${seriesId}` : `Live: ${seriesId}`) : 'No Series Connected'}
           </span>
         </div>
         {loading && <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />}
       </div>
       
-      {/* 1. TOP METRICS ROW (LIVE DATA) */}
+      {/* 1. TOP METRICS ROW */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <MetricCard label="Team Score" value={`${team1Score}:${team2Score}`} color="text-[#C89B3C]" />
         <MetricCard label="Team Gold" value={totalGold > 1000 ? `${(totalGold/1000).toFixed(1)}k` : totalGold} color="text-yellow-400" />
@@ -135,7 +135,7 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
          {loading ? (
            <div className="flex items-center gap-3 text-slate-400">
              <Loader2 className="w-5 h-5 animate-spin" />
-             <span>Generating analysis...</span>
+             <span>Analyzing match data...</span>
            </div>
          ) : macroReview ? (
            <div className="space-y-4">
@@ -169,7 +169,7 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
            </div>
          ) : (
            <p className="text-slate-500 text-sm italic">
-             {seriesId ? 'No analysis available yet. Data is loaded from GRID API.' : 'Connect to a live series to see AI-generated macro analysis.'}
+             {seriesId ? 'Analysis pending or not available for this series.' : 'Connect to a series to see AI-generated macro analysis.'}
            </p>
          )}
       </motion.div>

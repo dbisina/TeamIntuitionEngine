@@ -36,7 +36,7 @@ export function ValorantInsightsView({ player, teamName, seriesId }: { player: a
       if (!player?.player_name || !seriesId) return;
       setAiLoading(true);
       try {
-        const res = await fetch(`/api/v1/grid/player-insights/${seriesId}/${encodeURIComponent(player.player_name)}`, {
+        const res = await fetch(`http://localhost:8000/api/v1/grid/player-insights/${seriesId}/${encodeURIComponent(player.player_name)}`, {
           method: 'POST'
         });
         if (res.ok) {
@@ -214,8 +214,8 @@ export function ValorantInsightsView({ player, teamName, seriesId }: { player: a
              <h3 className="text-sm font-bold text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-wider justify-center">
                 <Activity className="w-4 h-4 text-cyan-500" /> Performance Profile
              </h3>
-             <div className="flex-1 min-h-[300px] w-full relative">
-                <ResponsiveContainer width="100%" height="100%">
+             <div className="h-[300px] w-full relative">
+                <ResponsiveContainer width="100%" height={300}>
                     <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                       <PolarGrid stroke="rgba(255,255,255,0.1)" />
                       <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 'bold' }} />
@@ -322,7 +322,7 @@ export function ValorantInsightsView({ player, teamName, seriesId }: { player: a
             <div className="flex items-center gap-3 mb-4">
               <Brain className="w-5 h-5 text-purple-400" />
               <h3 className="text-sm font-bold text-purple-300 uppercase tracking-widest">
-                DeepSeek AI Analysis
+                AI Analysis
               </h3>
               {aiLoading && <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />}
             </div>

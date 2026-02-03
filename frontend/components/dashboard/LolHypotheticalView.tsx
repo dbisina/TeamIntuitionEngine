@@ -12,17 +12,19 @@ import {
   RotateCcw
 } from 'lucide-react';
 
-export function LolHypotheticalView() {
+export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string; teamName?: string }) {
   const [scenario, setScenario] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
   const [error, setError] = useState<string | null>(null);
 
+  // Dynamic suggestions based on team context
+  const teamLabel = teamName || "we";
   const suggestions = [
-    { text: "Simulate: Contest vs Concede (Drake 3)", icon: Swords },
-    { text: "Simulate: Reset vs Push Mid (18:00)", icon: RotateCcw },
-    { text: "Simulate: Cross-map Baron for Inhib", icon: Map },
+    { text: `Should ${teamLabel} contest or concede Drake 3?`, icon: Swords },
+    { text: `Should ${teamLabel} reset or push mid at 18:00?`, icon: RotateCcw },
+    { text: `Should ${teamLabel} trade Baron for Inhib?`, icon: Map },
   ];
 
   const handleSimulate = async () => {
@@ -32,10 +34,10 @@ export function LolHypotheticalView() {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/grid/hypothetical/lol', {
+      const response = await fetch('http://localhost:8000/api/v1/grid/hypothetical/lol', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scenario })
+        body: JSON.stringify({ scenario, team_name: teamName })
       });
       
       if (!response.ok) {

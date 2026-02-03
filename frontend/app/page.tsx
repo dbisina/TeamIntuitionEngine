@@ -134,7 +134,7 @@ export default function App() {
                 <div className="h-full pt-12">
                    {activeView === 'insights' && <InsightsView game={game} seriesId={seriesId} />}
                    {activeView === 'macro' && <MacroReviewView game={game} seriesId={seriesId} />}
-                   {activeView === 'simulate' && <HypotheticalView game={game} />}
+                   {activeView === 'simulate' && <HypotheticalView game={game} seriesId={seriesId} />}
                 </div>
 
                 {/* DOCK NAVIGATION (Only visible in Dashboard) */}

@@ -166,6 +166,15 @@ export function InitializationView({ game, onConnect, onBack }: InitializationVi
             {/* Filters (Only for Browse) */}
             {mode === 'browse' && (
                 <div className="pb-2 flex gap-2 items-center">
+                    {/* Team Preset Filter - HACKATHON: Cloud9 is the host! */}
+                    <select 
+                        value={teamSearch === 'Cloud9' ? 'c9' : 'all'}
+                        onChange={(e) => setTeamSearch(e.target.value === 'c9' ? 'Cloud9' : '')}
+                        className="bg-black/40 border border-white/10 text-xs text-slate-300 rounded-lg px-2 py-1 focus:outline-none focus:border-white/30 cursor-pointer"
+                    >
+                        <option value="all">All Teams</option>
+                        <option value="c9">☁️ Cloud9</option>
+                    </select>
                     <select 
                         value={timeFilter}
                         onChange={(e) => setTimeFilter(e.target.value)}

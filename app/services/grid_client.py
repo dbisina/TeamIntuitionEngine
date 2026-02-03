@@ -399,10 +399,13 @@ class GRIDClient:
                     self.central_data_url,
                     json={"query": query, "variables": variables or {}},
                     headers={"x-api-key": self.api_key, "Content-Type": "application/json"},
-                    timeout=30.0
+                    timeout=60.0
                 )
                 response.raise_for_status()
                 return response.json()
+        except httpx.TimeoutException:
+            logger.error(f"GRID Central Data API timed out after 60s")
+            return {"errors": [{"message": "Request timed out"}]}
         except Exception as e:
             logger.error(f"GRID Central Data API error: {e}")
             return {"errors": [{"message": str(e)}]}
@@ -466,11 +469,29 @@ class GRIDClient:
             team_2_name = game_teams[1].get("name", "Team 2")
         
         # Build team name mapping for player assignment
+        # Map game_teams to the correct series-level team names
         teams = game_teams  # Use game_teams for player iteration
-            
+
+        # Create a mapping from game team index/side to the actual team names
+        # This ensures player.team_name matches team_1_name/team_2_name
+        team_name_map = {}
+        for i, team in enumerate(teams):
+            game_team_name = team.get("name", "Unknown")
+            team_side = team.get("side", "").lower()
+
+            # Match by index (first team = team_1, second = team_2)
+            if i == 0:
+                team_name_map[game_team_name] = team_1_name
+            elif i == 1:
+                team_name_map[game_team_name] = team_2_name
+            else:
+                team_name_map[game_team_name] = game_team_name
+
         for team in teams:
             team_side = team.get("side", "").lower()
-            team_name = team.get("name", "Unknown") # [NEW]
+            game_team_name = team.get("name", "Unknown")
+            # Use the mapped name that matches series-level team names
+            team_name = team_name_map.get(game_team_name, game_team_name)
             players = team.get("players", [])
             
             for player in players:
@@ -564,8 +585,9 @@ class GRIDClient:
             # [NEW] Metadata
             team_1_name=team_1_name,
             team_2_name=team_2_name,
-            team_1_score=current_game.get("score1", 0), # Placeholder if not in GRID
-            team_2_score=current_game.get("score2", 0),
+            # [FIX] Extract Round Score from Game Teams (not Series Score or missing fields)
+            team_1_score=game_teams[0].get("score", 0) if len(game_teams) > 0 else 0,
+            team_2_score=game_teams[1].get("score", 0) if len(game_teams) > 1 else 0,
             winner=winner,
             map_name=map_name,
             
