@@ -114,8 +114,12 @@ export function InitializationView({ game, onConnect, onBack }: InitializationVi
 
   // Fetch History once
   useEffect(() => {
-      fetch('http://localhost:8000/api/v1/matches/recent')
-          .then(res => res.json())
+    const API_BASE_URL = getApiUrl();
+      fetch(`${API_BASE_URL}/api/v1/matches/recent`)
+          .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+          })
           .then(data => setHistoryMatches(Array.isArray(data) ? data : []))
           .catch(err => console.error("History fetch error", err));
   }, []);
