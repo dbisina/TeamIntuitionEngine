@@ -50,6 +50,10 @@ def get_application() -> FastAPI:
 
     application.include_router(api_router, prefix=settings.API_V1_STR)
 
+    @application.get("/health")
+    async def health_check():
+        return {"status": "ok"}
+
     @application.get("/")
     async def root():
         return {
