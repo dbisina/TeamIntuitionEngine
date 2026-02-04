@@ -21,9 +21,15 @@ def get_application() -> FastAPI:
     )
     
     # Enable CORS for dashboard
+    # Note: allow_credentials=True requires explicit origins, not "*"
+    allowed_origins = [
+        "https://intuition-production.up.railway.app",
+        "http://localhost:3000",
+        "http://localhost:8080",
+    ]
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=allowed_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
