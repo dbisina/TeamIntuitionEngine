@@ -2,6 +2,15 @@
 Main entry point for the Team Intuition Engine FastAPI application.
 This file initializes the FastAPI app and includes the API routes.
 """
+import logging
+import os
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+logger.info("Starting Team Intuition Engine...")
+logger.info(f"DATABASE_URL set: {bool(os.getenv('DATABASE_URL'))}")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .api.routes import router as api_router
@@ -10,7 +19,11 @@ from .core.database import engine, Base
 from .models import db as db_models
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables created successfully")
+except Exception as e:
+    logger.error(f"Database initialization failed: {e}")
 
 
 def get_application() -> FastAPI:
