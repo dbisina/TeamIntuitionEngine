@@ -8,86 +8,19 @@ from typing import Dict, List, Any, Optional
 from pydantic import BaseModel, Field
 
 from .deepseek_client import deepseek_client, PromptTemplates
-from ..models.lol import Match, GameState, TimelineEvent, PlayerState
+from ..models.lol import (
+    Match, GameState, TimelineEvent, PlayerState,
+    MacroReviewAgenda, CriticalMoment, ObjectiveAnalysis,
+    DeathAnalysis, EconomyAnalysis, EnhancedLoLMacroReview
+)
+from .lol_stats_processor import lol_stats_processor
 
 logger = logging.getLogger(__name__)
 
 
 # ============================================================================
-# Response Models
+# Response Models (Imported from models.lol)
 # ============================================================================
-
-class CriticalMoment(BaseModel):
-    """A critical decision point in the match."""
-    timestamp: int = Field(description="Game time in seconds")
-    timestamp_formatted: str = Field(description="Formatted time like '24:15'")
-    event_type: str = Field(description="FIGHT, OBJECTIVE, DEATH, ROTATION")
-    description: str
-    decision_made: str
-    outcome: str
-    alternative_decision: Optional[str] = None
-    impact_score: float = Field(ge=0, le=1, description="How impactful 0-1")
-
-
-class ObjectiveAnalysis(BaseModel):
-    """Analysis of objective control patterns."""
-    objective_type: str = Field(description="DRAGON, BARON, TOWER, HERALD")
-    secured_count: int
-    contested_count: int
-    success_rate: float
-    key_issues: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
-
-
-class DeathAnalysis(BaseModel):
-    """Analysis of death patterns."""
-    total_deaths: int
-    isolated_deaths: int = Field(description="Deaths without team nearby")
-    pre_objective_deaths: int = Field(description="Deaths within 60s of objective")
-    death_locations: List[str] = Field(description="Common death areas")
-    preventable_deaths: int
-    death_cost_gold: int = Field(description="Estimated gold lost from deaths")
-
-
-class EconomyAnalysis(BaseModel):
-    """Analysis of team economy and resources."""
-    average_gold_diff: int
-    power_spike_timing: List[str] = Field(description="When team hit item spikes")
-    economy_management: str = Field(description="GOOD, AVERAGE, POOR")
-    key_purchases: List[str]
-    missed_opportunities: List[str]
-
-
-class MacroReviewAgenda(BaseModel):
-    """Complete structured Game Review Agenda for coaches."""
-    status: str = "success"
-    match_id: str
-    duration_formatted: str
-    winner: str
-    
-    # Executive Summary
-    executive_summary: str = Field(description="2-3 sentence match overview")
-    key_takeaways: List[str] = Field(description="Top 3-5 actionable insights")
-    
-    # Detailed Analysis Sections
-    critical_moments: List[CriticalMoment] = Field(
-        description="Key decision points to review"
-    )
-    objective_analysis: List[ObjectiveAnalysis] = Field(
-        description="Objective control breakdown"
-    )
-    death_analysis: DeathAnalysis
-    economy_analysis: EconomyAnalysis
-    
-    # Recommendations
-    priority_review_points: List[str] = Field(
-        description="What coach should focus VOD review on"
-    )
-    training_recommendations: List[str] = Field(
-        description="Practice/scrimmage focus areas"
-    )
-    
-    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class MacroReviewPrompts:
@@ -169,15 +102,7 @@ class LoLAnalyzer:
         timeline: Optional[List[TimelineEvent]] = None
     ) -> MacroReviewAgenda:
         """
-        Generate a comprehensive Game Review Agenda.
-        
-        Args:
-            match: Match data with players and outcome
-            game_state: Current/final game state with positions
-            timeline: Timeline events from the match
-            
-        Returns:
-            MacroReviewAgenda with structured coaching insights
+        Legacy method for basic review.
         """
         user_prompt = self._build_review_prompt(match, game_state, timeline)
         
@@ -188,6 +113,121 @@ class LoLAnalyzer:
         )
         
         return self._parse_response(response, match)
+
+    async def generate_enhanced_review(
+        self,
+        match: Match,
+        game_state: Optional[GameState] = None,
+        timeline: Optional[List[TimelineEvent]] = None
+    ) -> EnhancedLoLMacroReview:
+        """
+        Generate a comprehensive MONEYBALL Macro Review.
+        Combines AI qualitative analysis with calculated quantitative stats.
+        """
+        # 1. Qualitative Analysis (DeepSeek)
+        user_prompt = self._build_review_prompt(match, game_state, timeline)
+        
+        ai_response = await self.client.analyze(
+            system_prompt=MacroReviewPrompts.MACRO_REVIEW,
+            user_prompt=user_prompt,
+            response_schema={"type": "object"}
+        )
+        
+        # 2. Quantitative Analysis (Stats Processor)
+        stats_data = lol_stats_processor.process_match_stats(match, game_state, timeline)
+        
+        # 3. Merge into Enhanced Object
+        return self._construct_enhanced_review(ai_response, stats_data, match)
+
+    def _construct_enhanced_review(
+        self,
+        ai_data: Dict[str, Any],
+        stats_data: Dict[str, Any],
+        match: Match
+    ) -> EnhancedLoLMacroReview:
+        """Merge AI insights and Stats into final object."""
+        
+        # The ai_data contains fields that directly map to the EnhancedLoLMacroReview
+        # The stats_data contains 'team_metrics' and 'player_stats'
+        
+        # Ensure critical_moments are parsed into the correct Pydantic model if they come as dicts
+        critical_moments_parsed = []
+        for moment in ai_data.get("critical_moments", []):
+            try:
+                critical_moments_parsed.append(CriticalMoment(
+                    timestamp=moment.get("timestamp", 0),
+                    timestamp_formatted=moment.get("timestamp_formatted", "0:00"),
+                    event_type=moment.get("event_type", "UNKNOWN"),
+                    description=moment.get("description", ""),
+                    decision_made=moment.get("decision_made", ""),
+                    outcome=moment.get("outcome", ""),
+                    alternative_decision=moment.get("alternative_decision"),
+                    impact_score=moment.get("impact_score", 0.5)
+                ))
+            except Exception as e:
+                logger.warning(f"Failed to parse critical moment for enhanced review: {e}")
+
+        # Ensure objective_analysis are parsed into the correct Pydantic model if they come as dicts
+        objective_analysis_parsed = []
+        for obj in ai_data.get("objective_analysis", []):
+            try:
+                objective_analysis_parsed.append(ObjectiveAnalysis(
+                    objective_type=obj.get("objective_type", "UNKNOWN"),
+                    secured_count=obj.get("secured_count", 0),
+                    contested_count=obj.get("contested_count", 0),
+                    success_rate=obj.get("success_rate", 0.0),
+                    key_issues=obj.get("key_issues", []),
+                    recommendations=obj.get("recommendations", [])
+                ))
+            except Exception as e:
+                logger.warning(f"Failed to parse objective analysis for enhanced review: {e}")
+
+        # Ensure death_analysis is parsed
+        death_data = ai_data.get("death_analysis", {})
+        death_analysis_parsed = DeathAnalysis(
+            total_deaths=death_data.get("total_deaths", 0),
+            isolated_deaths=death_data.get("isolated_deaths", 0),
+            pre_objective_deaths=death_data.get("pre_objective_deaths", 0),
+            death_locations=death_data.get("death_locations", []),
+            preventable_deaths=death_data.get("preventable_deaths", 0),
+            death_cost_gold=death_data.get("death_cost_gold", 0)
+        )
+
+        # Ensure economy_analysis is parsed
+        econ_data = ai_data.get("economy_analysis", {})
+        economy_analysis_parsed = EconomyAnalysis(
+            average_gold_diff=econ_data.get("average_gold_diff", 0),
+            power_spike_timing=econ_data.get("power_spike_timing", []),
+            economy_management=econ_data.get("economy_management", "AVERAGE"),
+            key_purchases=econ_data.get("key_purchases", []),
+            missed_opportunities=econ_data.get("missed_opportunities", [])
+        )
+
+        # Format duration
+        mins = match.duration_seconds // 60
+        secs = match.duration_seconds % 60
+
+        return EnhancedLoLMacroReview(
+            status="success",
+            match_id=match.match_id,
+            duration_formatted=f"{mins}:{secs:02d}",
+            winner=match.winner_side,
+            executive_summary=ai_data.get("executive_summary", "Analysis complete."),
+            key_takeaways=ai_data.get("key_takeaways", []),
+            critical_moments=critical_moments_parsed,
+            objective_analysis=objective_analysis_parsed,
+            death_analysis=death_analysis_parsed,
+            economy_analysis=economy_analysis_parsed,
+            priority_review_points=ai_data.get("priority_review_points", []),
+            training_recommendations=ai_data.get("training_recommendations", []),
+            team_metrics=stats_data.get("team_metrics", {}),
+            player_stats=stats_data.get("player_stats", []),
+            metadata={
+                "model": "deepseek-chat",
+                "match_id": match.match_id,
+                "winner": match.winner_side
+            }
+        )
     
     def _build_review_prompt(
         self,

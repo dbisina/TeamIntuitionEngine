@@ -9,7 +9,9 @@ import {
   Swords, 
   Map, 
   TrendingUp,
-  RotateCcw
+  RotateCcw,
+  AlertTriangle,
+  CheckCircle2
 } from 'lucide-react';
 import { getApiUrl } from '@/lib/utils';
 
@@ -47,14 +49,18 @@ export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string;
       }
       
       const data = await response.json();
-      if (data.result) {
-        setResult(data.result);
+      // The backend returns the HypotheticalResponse object directly or wrapped
+      // Assuming it might be nested in 'result' or returned directly
+      const simResult = data.result || data;
+      
+      if (simResult && simResult.primary_scenario) {
+        setResult(simResult);
       } else {
-        throw new Error('No result from API');
+        throw new Error('Invalid result structure');
       }
     } catch (e) {
       console.error('Hypothetical API error', e);
-      setError('Simulation API not available. Please try again later.');
+      setError('Simulation Engine currently offline for calibration.');
     } finally {
       setLoading(false);
     }
@@ -71,13 +77,13 @@ export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string;
       >
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#C89B3C]/10 border border-[#C89B3C]/20 rounded-full text-[#C89B3C] font-mono text-[10px] mb-3 uppercase tracking-widest">
              <BrainCircuit className="h-3 w-3" />
-             Game State Locked: 22:15 (Drake Spawning)
+             Game State Locked: Live Sync
         </div>
         <h2 className="text-4xl font-bold tracking-tight text-white mb-2">
           Macro Simulator
         </h2>
         <p className="text-slate-400 max-w-lg mx-auto text-sm">
-            Evaluate objectve trades and macro decisions. Engine locked to current match state (LoL).
+            Evaluate objective trades and macro decisions. Engine locked to current match state (LoL).
         </p>
       </motion.div>
 
@@ -152,30 +158,37 @@ export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string;
                     <span className="text-xs font-bold text-slate-500">VS</span>
                  </div>
 
-                 {/* OPTION A: ALTERNATIVE (USER QUERY) */}
-                 <div className="glass-panel p-6 rounded-2xl border-rose-500/30 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <Swords className="h-24 w-24 text-rose-500" />
-                    </div>
-                    <div className="relative z-10">
-                         <div className="text-xs font-bold text-rose-400 uppercase tracking-widest mb-1">Alternative Path</div>
-                         <h3 className="text-xl font-bold text-white mb-6">{result.alternative}</h3>
-                         
-                         <div className="space-y-4">
-                            <div>
-                                <div className="text-xs text-slate-400">Projected Equity</div>
-                                <div className="text-2xl font-bold text-slate-500">35% <span className="text-sm font-normal text-slate-600">(Coinflip)</span></div>
+                 {/* OPTION A: ALTERNATIVE (Secondary) */}
+                 {result.alternative_scenario && (
+                    <div className="glass-panel p-6 rounded-2xl border-white/5 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Swords className="h-24 w-24 text-slate-400" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Alternative Path</div>
+                            <h3 className="text-xl font-bold text-slate-300 mb-6">{result.alternative_scenario.scenario}</h3>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <div className="text-xs text-slate-500">Success Probability</div>
+                                    <div className="text-2xl font-bold text-slate-400">
+                                        {(result.alternative_scenario.success_probability * 100).toFixed(0)}%
+                                    </div>
+                                </div>
+                                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                                    <div className="text-xs text-slate-400 font-mono flex items-center gap-2">
+                                        <AlertTriangle className="w-3 h-3" />
+                                        RISK: {result.alternative_scenario.risk_factors?.[0] || "Unknown"}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="p-3 bg-rose-500/10 rounded-lg border border-rose-500/20">
-                                <div className="text-xs text-rose-300 font-mono">RISK: High - Wipe Potential</div>
-                            </div>
-                         </div>
+                        </div>
                     </div>
-                 </div>
+                 )}
 
-                 {/* OPTION B: SUGGESTED (OPTIMAL) */}
-                 <div className="glass-panel p-6 rounded-2xl border-[#C89B3C]/30 relative overflow-hidden bg-[#C89B3C]/5">
-                     <div className="absolute top-0 right-0 p-4 opacity-10">
+                 {/* OPTION B: SUGGESTED (Primary) */}
+                 <div className="glass-panel p-6 rounded-2xl border-[#C89B3C]/30 relative overflow-hidden bg-[#C89B3C]/5 group">
+                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <TrendingUp className="h-24 w-24 text-[#C89B3C]" />
                     </div>
                     <div className="relative z-10">
@@ -183,16 +196,18 @@ export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string;
                             <Sparkles className="w-3 h-3" />
                             AI Recommendation
                          </div>
-                         <h3 className="text-xl font-bold text-white mb-6">{result.suggested}</h3>
+                         <h3 className="text-xl font-bold text-white mb-6">{result.primary_scenario.scenario}</h3>
                          
                          <div className="space-y-4">
                             <div>
-                                <div className="text-xs text-slate-400">Win Prob Delta</div>
-                                <div className="text-4xl font-black text-[#C89B3C]">{result.delta}</div>
+                                <div className="text-xs text-slate-400">Success Probability</div>
+                                <div className="text-4xl font-black text-[#C89B3C]">
+                                    {(result.primary_scenario.success_probability * 100).toFixed(0)}%
+                                </div>
                             </div>
                              <div>
-                                <div className="text-xs text-slate-400">Macro Tradeoff</div>
-                                <div className="text-lg font-bold text-white">{result.tradeoff}</div>
+                                <div className="text-xs text-slate-400">Expected Outcome</div>
+                                <div className="text-lg font-bold text-white">{result.primary_scenario.expected_outcome}</div>
                             </div>
                          </div>
                     </div>
@@ -213,7 +228,7 @@ export function LolHypotheticalView({ seriesId, teamName }: { seriesId?: string;
                     <div>
                         <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wide mb-2">Engine Reasoning</h4>
                         <p className="text-slate-400 leading-relaxed font-light">
-                            {result.reasoning}
+                            {result.reasoning_summary}
                         </p>
                     </div>
                 </div>

@@ -12,10 +12,21 @@ from pydantic import BaseModel, Field
 
 class PlayerStats(BaseModel):
     """Statistical performance data for a player."""
-    kda: float
-    cs_per_min: float
-    vision_score: float
-    gold_earned: int
+    # Raw Stats
+    kills: int = 0
+    deaths: int = 0
+    assists: int = 0
+    total_minions_killed: int = 0
+    neutral_minions_killed: int = 0
+    gold_earned: int = 0
+    vision_score: int = 0
+    total_damage_dealt_to_champions: int = 0
+    total_damage_taken: int = 0
+    
+    # Computed/Derived (Optional during Raw Data Ingest)
+    kda: float = 0.0
+    cs_per_min: float = 0.0
+    kill_participation: float = 0.0
 
 
 class Player(BaseModel):
@@ -24,6 +35,7 @@ class Player(BaseModel):
     role: str
     champion: str
     rank: str
+    team: str # 'blue' or 'red'
     stats: Optional[PlayerStats] = None
 
 
@@ -54,6 +66,7 @@ class PlayerState(BaseModel):
     team_name: Optional[str] = None  # Added: Team affiliation
     role: str
     gold: int
+    cs: int = 0
     level: int
     position: Dict[str, float] = Field(default_factory=lambda: {"x": 0.0, "y": 0.0})
     vision_score: float
@@ -246,7 +259,10 @@ class HypotheticalResponse(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+# ============================================================================
 # Legacy AnalysisResponse for backward compatibility
+# ============================================================================
+
 class AnalysisResponse(BaseModel):
     """Standardized response for AI-powered analysis results (legacy)."""
     status: str
@@ -254,4 +270,147 @@ class AnalysisResponse(BaseModel):
     insights: List[str]
     recommendations: List[str]
     metadata: dict = Field(default_factory=dict)
+
+
+# ============================================================================
+# Enhanced Macro Review Models (Moneyball)
+# ============================================================================
+
+class LoLTeamMetrics(BaseModel):
+    """Calculated team-level performance metrics."""
+    gold_diff_15: int = 0
+    xp_diff_15: int = 0
+    dragon_control_rate: float = 0.0
+    baron_control_rate: float = 0.0
+    tower_destruction_rate: float = 0.0
+    vision_score_per_minute: float = 0.0
+    jungle_proximity: float = 0.0
+    lane_pressure_score: float = 0.0
+
+class ExpandedPlayerStats(BaseModel):
+    """Detailed computed stats for a player."""
+    player_name: str
+    champion: str
+    role: str
+    team_name: str
+    
+    # Core
+    kda: str
+    cs_per_min: float
+    gold_per_min: float
+    xp_per_min: float
+    
+    # Impact
+    kp_percent: float = 0.0  # Kill Participation
+    dmg_share: float = 0.0
+    gold_share: float = 0.0
+    vision_score_per_min: float = 0.0
+    
+    # Advanced / "Moneyball"
+    isolated_deaths: int = 0
+    forward_percentage: float = 0.0  # % time past river
+    objective_participation: float = 0.0
+    laning_score: float = 0.0  # Proprietary score based on CSD/GD@15
+    survival_rating: float = 0.0
+
+# ============================================================================
+# Macro Review Models
+# ============================================================================
+
+class CriticalMoment(BaseModel):
+    """A critical decision point in the match."""
+    timestamp: int = Field(description="Game time in seconds")
+    timestamp_formatted: str = Field(description="Formatted time like '24:15'")
+    event_type: str = Field(description="FIGHT, OBJECTIVE, DEATH, ROTATION")
+    description: str
+    decision_made: str
+    outcome: str
+    alternative_decision: Optional[str] = None
+    impact_score: float = Field(ge=0, le=1, description="How impactful 0-1")
+
+
+class ObjectiveAnalysis(BaseModel):
+    """Analysis of objective control patterns."""
+    objective_type: str = Field(description="DRAGON, BARON, TOWER, HERALD")
+    secured_count: int
+    contested_count: int
+    success_rate: float
+    key_issues: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+
+
+class DeathAnalysis(BaseModel):
+    """Analysis of death patterns."""
+    total_deaths: int
+    isolated_deaths: int = Field(description="Deaths without team nearby")
+    pre_objective_deaths: int = Field(description="Deaths within 60s of objective")
+    death_locations: List[str] = Field(description="Common death areas")
+    preventable_deaths: int
+    death_cost_gold: int = Field(description="Estimated gold lost from deaths")
+
+
+class EconomyAnalysis(BaseModel):
+    """Analysis of team economy and resources."""
+    average_gold_diff: int
+    power_spike_timing: List[str] = Field(description="When team hit item spikes")
+    economy_management: str = Field(description="GOOD, AVERAGE, POOR")
+    key_purchases: List[str]
+    missed_opportunities: List[str]
+
+
+class MacroReviewAgenda(BaseModel):
+    """Complete structured Game Review Agenda for coaches."""
+    status: str = "success"
+    match_id: str
+    duration_formatted: str
+    winner: str
+    
+    # Executive Summary
+    executive_summary: str = Field(description="2-3 sentence match overview")
+    key_takeaways: List[str] = Field(description="Top 3-5 actionable insights")
+    
+    # Detailed Analysis Sections
+    critical_moments: List[CriticalMoment] = Field(
+        description="Key decision points to review"
+    )
+    objective_analysis: List[ObjectiveAnalysis] = Field(
+        description="Objective control breakdown"
+    )
+    death_analysis: DeathAnalysis
+    economy_analysis: EconomyAnalysis
+    
+    # Recommendations
+    priority_review_points: List[str] = Field(
+        description="What coach should focus VOD review on"
+    )
+    training_recommendations: List[str] = Field(
+        description="Practice/scrimmage focus areas"
+    )
+    
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class EnhancedLoLMacroReview(BaseModel):
+    """Complete data object for the Enhanced LoL Macro View."""
+    status: str = "success"
+    match_id: str
+    duration_formatted: str
+    winner: str
+    
+    # AI Qualitative Analysis
+    executive_summary: str
+    key_takeaways: List[str]
+    critical_moments: List[CriticalMoment]
+    objective_analysis: List[ObjectiveAnalysis]
+    death_analysis: DeathAnalysis
+    economy_analysis: EconomyAnalysis
+    priority_review_points: List[str]
+    training_recommendations: List[str]
+    
+    # Calculated Quantitative Data
+    team_metrics: LoLTeamMetrics
+    player_stats: List[ExpandedPlayerStats]
+    
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
 
