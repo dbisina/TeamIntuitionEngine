@@ -39,18 +39,6 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
         </p>
       </motion.div>
 
-      {/* Feature Highlights */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mb-10"
-      >
-        <FeatureCard icon={Brain} label="AI Analysis" value="DeepSeek" color="text-purple-400" />
-        <FeatureCard icon={Activity} label="Real-Time" value="GRID Data" color="text-cyan-400" />
-        <FeatureCard icon={Target} label="Precision" value="Moneyball" color="text-emerald-400" />
-        <FeatureCard icon={TrendingUp} label="Insights" value="Actionable" color="text-amber-400" />
-      </motion.div>
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mb-12">
@@ -165,38 +153,6 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
           </div>
         </motion.button>
       </div>
-
-      {/* Platform Capabilities */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="w-full max-w-5xl mb-12"
-      >
-        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 text-center">
-          Platform Capabilities
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <CapabilityCard
-            icon={Brain}
-            title="AI-Powered Analysis"
-            description="DeepSeek AI processes match data to identify patterns, mistakes, and strategic opportunities invisible to the human eye."
-            color="purple"
-          />
-          <CapabilityCard
-            icon={BarChart3}
-            title="Moneyball Metrics"
-            description="Advanced statistics that correlate with winning. KAST impact, role efficiency, and economy patterns that matter."
-            color="emerald"
-          />
-          <CapabilityCard
-            icon={Zap}
-            title="Real-Time Intelligence"
-            description="Live data integration with GRID Esports API for instant analysis during scrims and matches."
-            color="amber"
-          />
-        </div>
-      </motion.div>
 
       {/* Stats Banner */}
       <motion.div
