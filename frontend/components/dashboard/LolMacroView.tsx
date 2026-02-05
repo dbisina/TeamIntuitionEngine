@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   TrendingUp,
-  Map,
   Eye,
   Zap,
   Swords,
@@ -13,14 +12,10 @@ import {
   Target,
   Brain,
   Loader2,
-  Shield,
   Clock,
   Coins,
   Users,
-  BarChart3,
-  Skull,
-  Crown,
-  Crosshair
+  Crown
 } from 'lucide-react';
 import { getApiUrl } from '@/lib/utils';
 
@@ -116,10 +111,16 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
     }
 
     // Don't fetch if teamName is not a real team name yet
-    const invalidTeamNames = ["Loading", "Team 1", "Team 2", "Team A", "Team B", "Unknown"];
+    const invalidTeamNames = ["Loading", "Unknown", ""];
     if (!teamName || invalidTeamNames.includes(teamName)) {
       console.log(`[LolMacroView] Waiting for real team name, got: ${teamName}`);
       return;
+    }
+
+    // Allow "Team 1/2" etc. but log it as a warning
+    const placeholderNames = ["Team 1", "Team 2", "Team A", "Team B"];
+    if (placeholderNames.includes(teamName)) {
+      console.log(`[LolMacroView] Using placeholder team name: ${teamName}, proceeding with fetch`);
     }
 
     const fetchEnhancedData = async () => {
@@ -511,15 +512,15 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
             {/* Key Player Dependency */}
-            {teamRoleImpact.length > 0 && teamRoleImpact[0]?.impact_score > 70 && (
+            {teamRoleImpact.length > 0 && teamRoleImpact[0] && teamRoleImpact[0].impact_score > 70 && (
               <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                 <div className="flex items-center gap-2 mb-2">
                   <Crown className="w-4 h-4 text-emerald-400" />
                   <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Star Performer</span>
                 </div>
                 <p className="text-sm text-slate-300">
-                  <strong className="text-white">{teamRoleImpact[0]?.player_name}</strong> has the highest impact score
-                  ({teamRoleImpact[0]?.impact_score.toFixed(0)}) on {teamRoleImpact[0]?.champion}.
+                  <strong className="text-white">{teamRoleImpact[0].player_name}</strong> has the highest impact score
+                  ({teamRoleImpact[0].impact_score.toFixed(0)}) on {teamRoleImpact[0].champion}.
                 </p>
                 <p className="text-xs text-slate-500 mt-2">
                   Continue to enable this player with resources and map pressure.
@@ -528,21 +529,25 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
             )}
 
             {/* Low Impact Warning */}
-            {teamRoleImpact.length > 0 && teamRoleImpact[teamRoleImpact.length - 1]?.impact_score < 40 && (
-              <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="w-4 h-4 text-rose-400" />
-                  <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Needs Support</span>
+            {(() => {
+              const lastPlayer = teamRoleImpact.length > 0 ? teamRoleImpact[teamRoleImpact.length - 1] : null;
+              if (!lastPlayer || lastPlayer.impact_score >= 40) return null;
+              return (
+                <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-400" />
+                    <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Needs Support</span>
+                  </div>
+                  <p className="text-sm text-slate-300">
+                    <strong className="text-white">{lastPlayer.player_name}</strong> had
+                    low impact ({lastPlayer.impact_score.toFixed(0)}).
+                  </p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Review positioning, jungle proximity, and team coordination.
+                  </p>
                 </div>
-                <p className="text-sm text-slate-300">
-                  <strong className="text-white">{teamRoleImpact[teamRoleImpact.length - 1]?.player_name}</strong> had
-                  low impact ({teamRoleImpact[teamRoleImpact.length - 1]?.impact_score.toFixed(0)}).
-                </p>
-                <p className="text-xs text-slate-500 mt-2">
-                  Review positioning, jungle proximity, and team coordination.
-                </p>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Gold Analysis */}
             {teamPerformance && (

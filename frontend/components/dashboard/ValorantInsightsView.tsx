@@ -16,7 +16,7 @@ import {
   Brain,
   Loader2
 } from 'lucide-react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { getApiUrl } from '@/lib/utils';
 
 interface AIInsight {
@@ -206,38 +206,40 @@ export function ValorantInsightsView({ player, teamName, seriesId }: { player: a
               </div>
           </div>
 
-          {/* 2. RADAR CHART (Right Col) */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }} 
-            animate={{ opacity: 1, x: 0 }} 
+          {/* 2. RADAR CHART (Right Col) - Performance Profile */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="glass-panel p-6 rounded-2xl flex flex-col"
+            className="glass-panel p-4 rounded-2xl flex flex-col items-center justify-center"
+            style={{ minHeight: '320px' }}
           >
-             <h3 className="text-sm font-bold text-slate-400 mb-4 flex items-center gap-2 uppercase tracking-wider justify-center">
-                <Activity className="w-4 h-4 text-cyan-500" /> Performance Profile
+             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2 w-full text-center">
+                Performance Profile
              </h3>
-             <div className="h-[300px] w-full relative">
-                <ResponsiveContainer width="100%" height={300}>
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+             <div className="w-full flex-1 relative" style={{ minHeight: '250px', minWidth: '200px' }}>
+                <ResponsiveContainer width="100%" height={250} minWidth={200}>
+                    <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
                       <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                      <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 'bold' }} />
+                      <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10 }} />
                       <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                       <Radar
-                        name="Player"
+                        name={player.player_name || 'Player'}
                         dataKey="A"
-                        stroke={teamName === 'Sentinels' ? '#FF4655' : '#00E1E1'} // Team Colors
+                        stroke="#FF4655"
                         strokeWidth={2}
-                        fill={teamName === 'Sentinels' ? '#FF4655' : '#00E1E1'}
-                        fillOpacity={0.4}
+                        fill="#FF4655"
+                        fillOpacity={0.3}
+                      />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}
+                        itemStyle={{ color: '#FF4655' }}
                       />
                     </RadarChart>
                 </ResponsiveContainer>
-                
-                {/* Rating Overlay */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                    <div className="text-3xl font-black text-white leading-none">{Math.round((acs/300)*100)}</div>
-                    <div className="text-[8px] text-slate-500 uppercase font-bold tracking-widest">RATING</div>
-                </div>
+             </div>
+             <div className="text-xs text-slate-500 text-center mt-2">
+                Based on current match data vs role averages
              </div>
           </motion.div>
 

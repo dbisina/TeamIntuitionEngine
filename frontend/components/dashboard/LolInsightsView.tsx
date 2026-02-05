@@ -1,7 +1,9 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Footprints, 
+import {
+  Footprints,
   Coins, 
   Eye, 
   Swords, 
@@ -116,23 +118,23 @@ export function LolInsightsView({ player, teamName, seriesId }: { player: any, t
        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* 2. PERFORMANCE PROFILE (Radar) */}
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="lg:col-span-1 glass-panel p-4 rounded-2xl flex flex-col items-center justify-center min-h-[300px]">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="lg:col-span-1 glass-panel p-4 rounded-2xl flex flex-col items-center justify-center" style={{ minHeight: '320px' }}>
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2 w-full text-center">Playstyle Profile</h3>
-            <div className="w-full h-[250px] relative">
-                <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+            <div className="w-full flex-1 relative" style={{ minHeight: '250px', minWidth: '200px' }}>
+                <ResponsiveContainer width="100%" height={250} minWidth={200}>
+                    <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
                     <PolarGrid stroke="rgba(255,255,255,0.1)" />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10 }} />
                     <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                     <Radar
-                        name={player.player_name}
+                        name={player.player_name || 'Player'}
                         dataKey="A"
                         stroke="#C89B3C"
                         strokeWidth={2}
                         fill="#C89B3C"
                         fillOpacity={0.3}
                     />
-                    <Tooltip 
+                    <Tooltip
                         contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}
                         itemStyle={{ color: '#C89B3C' }}
                     />
