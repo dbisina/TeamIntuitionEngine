@@ -92,10 +92,42 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
   const team2Score = matchData?.team_2_score || 0;
   const mapName = matchData?.map_name || 'Summoner\'s Rift';
   
+  // Client-side Metric Derivation (Instant "Moneyball" stats from raw matchData)
+  const defaultMetrics = matchData ? deriveMetricsFromMatch(matchData, team1Name) : null;
+  
+  // Merge Server Data with Default Fallbacks
+  const displayedMetrics = macroReview?.team_metrics || defaultMetrics || {
+      gold_diff_15: 0,
+      dragon_control_rate: 0,
+      vision_score_per_minute: 0,
+      lane_pressure_score: 0
+  };
+
   // Format Gold Diff for display
-  const goldDiff = macroReview?.team_metrics?.gold_diff_15 || 0;
+  const goldDiff = displayedMetrics.gold_diff_15;
   const goldDiffColor = goldDiff > 0 ? 'text-emerald-400' : 'text-rose-400';
   const goldDiffSign = goldDiff > 0 ? '+' : '';
+
+  // Helper to calculate stats from crude matchData if backend is slow
+  function deriveMetricsFromMatch(match: any, myTeam: string) {
+      if (!match || !match.players) return null;
+      
+      const myPlayers = match.players.filter((p: any) => p.team === 'blue' || p.team === myTeam); // specific check depends on matchData structure
+      const enemyPlayers = match.players.filter((p: any) => p.team === 'red' || (p.team !== 'blue' && p.team !== myTeam));
+      
+      const myGold = myPlayers.reduce((acc: number, p: any) => acc + (p.stats?.gold_earned || 0), 0);
+      const enemyGold = enemyPlayers.reduce((acc: number, p: any) => acc + (p.stats?.gold_earned || 0), 0);
+      
+      const myVision = myPlayers.reduce((acc: number, p: any) => acc + (p.stats?.vision_score || 0), 0);
+      const durationMin = Math.max(1, (match.duration_seconds || 1800) / 60);
+      
+      return {
+          gold_diff_15: Math.round((myGold - enemyGold) * (15 / durationMin)), // Rough projection
+          dragon_control_rate: 0, // Hard to guess from raw player stats
+          vision_score_per_minute: myVision / durationMin,
+          lane_pressure_score: 0
+      };
+  }
 
   return (
     <div className="space-y-6 pb-20">
@@ -127,19 +159,19 @@ export function LolMacroView({ teamName, matchData, seriesId }: { teamName: stri
         />
         <MetricCard 
           label="Objective Control" 
-          value={`${(macroReview?.team_metrics?.dragon_control_rate || 0).toFixed(0)}%`} 
+          value={`${(displayedMetrics.dragon_control_rate || 0).toFixed(0)}%`} 
           color="text-[#C89B3C]" 
           icon={Target}
         />
         <MetricCard 
           label="Vision / Min" 
-          value={(macroReview?.team_metrics?.vision_score_per_minute || 0).toFixed(1)} 
+          value={(displayedMetrics.vision_score_per_minute || 0).toFixed(1)} 
           color="text-purple-400" 
           icon={Eye}
         />
          <MetricCard 
           label="Lane Pressure" 
-          value={(macroReview?.team_metrics?.lane_pressure_score || 0).toFixed(1)} 
+          value={(displayedMetrics.lane_pressure_score || 0).toFixed(1)} 
           color="text-emerald-400" 
           subtext="Structure Dmg Share"
           icon={Zap}
