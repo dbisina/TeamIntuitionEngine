@@ -187,7 +187,7 @@ export function MacroReviewView({ game = "VALORANT", seriesId }: MacroReviewView
           transition={{ duration: 0.3 }}
         >
           {game === "LoL" ? (
-            <LolMacroView teamName={activeTeamName} />
+            <LolMacroView teamName={activeTeamName} matchData={matchData} seriesId={seriesId} />
           ) : (
             <ValorantMacroView teamName={activeTeamName} matchData={matchData} seriesId={seriesId} />
           )}
