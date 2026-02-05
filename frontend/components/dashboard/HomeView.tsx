@@ -18,16 +18,16 @@ import {
 
 export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => void }) {
   return (
-    <div className="flex h-full flex-col items-center justify-start p-6 relative z-10 overflow-y-auto">
+    <div className="flex h-full flex-col items-center justify-center p-6 relative z-10">
 
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center mb-12 space-y-4"
+        className="text-center mb-16 space-y-4"
       >
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+        <h1 className="text-6xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
           Team Intuition
         </h1>
         <p className="text-slate-400 text-lg uppercase tracking-[0.3em] font-medium">
@@ -41,7 +41,7 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
 
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl mb-12">
 
         {/* League of Legends Card */}
         <motion.button
@@ -49,8 +49,8 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          whileHover={{ y: -8, scale: 1.02 }}
-          className="group relative h-[350px] w-full rounded-[28px] overflow-hidden text-left shadow-[0_0_60px_-15px_rgba(200,155,60,0.3)] transition-all duration-500 border border-[#C89B3C]/20"
+          whileHover={{ y: -10, scale: 1.02 }}
+          className="group relative h-[400px] w-full rounded-[32px] overflow-hidden text-left shadow-[0_0_60px_-15px_rgba(200,155,60,0.3)] transition-all duration-500"
         >
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#091428] via-[#0A1428] to-[#0F1F38] opacity-90" />
@@ -81,7 +81,7 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
               <span className="text-slate-300 text-xs font-mono">GRID WARPED</span>
             </div>
 
-            <h2 className="text-4xl font-bold text-white mb-2 group-hover:text-[#C89B3C] transition-colors duration-300">
+            <h2 className="text-5xl font-bold text-white mb-2 group-hover:text-[#C89B3C] transition-colors duration-300">
               League of Legends
             </h2>
             <p className="text-slate-400 group-hover:text-white transition-colors duration-300 mb-4">
@@ -104,8 +104,8 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          whileHover={{ y: -8, scale: 1.02 }}
-          className="group relative h-[350px] w-full rounded-[28px] overflow-hidden text-left shadow-[0_0_60px_-15px_rgba(255,70,85,0.3)] transition-all duration-500 border border-[#FF4655]/20"
+          whileHover={{ y: -10, scale: 1.02 }}
+          className="group relative h-[400px] w-full rounded-[32px] overflow-hidden text-left shadow-[0_0_60px_-15px_rgba(255,70,85,0.3)] transition-all duration-500 border border-[#FF4655]/20"
         >
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#0F1923] via-[#1A242D] to-[#0F1923] opacity-90" />
@@ -136,7 +136,7 @@ export function HomeView({ onSelectGame }: { onSelectGame: (game: string) => voi
               <span className="text-slate-300 text-xs font-mono">GRID SERIES STATE</span>
             </div>
 
-            <h2 className="text-4xl font-bold text-white mb-2 group-hover:text-[#FF4655] transition-colors duration-300">
+            <h2 className="text-5xl font-bold text-white mb-2 group-hover:text-[#FF4655] transition-colors duration-300">
               VALORANT
             </h2>
             <p className="text-slate-400 group-hover:text-white transition-colors duration-300 mb-4">
